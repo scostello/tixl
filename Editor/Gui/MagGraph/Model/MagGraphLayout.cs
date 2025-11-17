@@ -699,6 +699,15 @@ internal sealed class MagGraphLayout
                                               VisibleOutputIndex = sourceItem.OutputLines[outputLineIndex].VisibleIndex,
                                           };
 
+            var valid = inputLineIndex < targetItem.InputLines.Length
+                        && outputLineIndex < sourceItem.OutputLines.Length;
+
+            if (!valid)
+            {
+                Log.Warning($"Input line index {inputLineIndex} ouf of range?");
+                continue;
+            }
+                
             targetItem.InputLines[inputLineIndex].ConnectionIn = snapGraphConnection;
             sourceItem.OutputLines[outputLineIndex].ConnectionsOut.Add(snapGraphConnection);
             MagConnections.Add(snapGraphConnection);
