@@ -5,6 +5,7 @@ using T3.Editor.Gui.Graph.Dialogs;
 using T3.Editor.Gui.MagGraph.Interaction;
 using T3.Editor.Gui.MagGraph.Model;
 using T3.Editor.Gui.MagGraph.Ui;
+using T3.Editor.Gui.UiHelpers;
 using T3.Editor.UiModel.Commands;
 using T3.Editor.UiModel.Commands.Graph;
 using T3.Editor.UiModel.Modification;
@@ -13,11 +14,6 @@ using T3.Editor.UiModel.Selection;
 using MagItemMovement = T3.Editor.Gui.MagGraph.Interaction.MagItemMovement;
 
 namespace T3.Editor.Gui.MagGraph.States;
-
-public abstract class InteractionContext
-{
-    
-}
 
 /// <summary>
 /// Holds the current interaction state of the graph. It is passed as a parameter
@@ -66,7 +62,7 @@ public abstract class InteractionContext
 ///
 /// 
 ///</remarks>
-internal sealed class GraphUiContext: InteractionContext
+internal sealed class GraphUiContext
 {
     internal GraphUiContext(ProjectView projectView,  MagGraphView view)
     {
@@ -75,7 +71,7 @@ internal sealed class GraphUiContext: InteractionContext
         ItemMovement = new MagItemMovement(this, view, Layout, projectView.NodeSelection);
         Placeholder = new PlaceholderCreation();
         //EditCommentDialog = new EditCommentDialog();
-        StateMachine = new StateMachine(this);// needs to be initialized last
+        StateMachine = new StateMachine<GraphUiContext>(GraphStates.Default);// needs to be initialized last
     }
 
     internal readonly ProjectView ProjectView;
@@ -93,7 +89,7 @@ internal sealed class GraphUiContext: InteractionContext
     internal readonly ConnectionHovering ConnectionHovering = new();
     internal readonly MagGraphLayout Layout = new();
     
-    internal readonly StateMachine StateMachine;
+    internal readonly StateMachine<GraphUiContext> StateMachine;
     internal  MacroCommand? MacroCommand { get; private set; }
     
     /** Keep for continuous update of dragged items */

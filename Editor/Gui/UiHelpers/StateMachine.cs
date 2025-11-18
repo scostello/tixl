@@ -1,11 +1,12 @@
 ﻿using System.Reflection;
 using ImGuiNET;
 
-namespace T3.Editor.Gui.MagGraph.States;
+namespace T3.Editor.Gui.UiHelpers;
 
-internal record struct State(Action<GraphUiContext> Enter=null, 
-                             Action<GraphUiContext> Update=null, 
-                             Action<GraphUiContext> Exit=null);
+
+internal record struct State<T>(Action<T> Enter=null, 
+                             Action<T> Update=null, 
+                             Action<T> Exit=null);
 
 
 /// <summary>
@@ -13,25 +14,25 @@ internal record struct State(Action<GraphUiContext> Enter=null,
 /// of a state machine that handles activation of <see cref="State"/>s. There can only be one state active.
 /// Most of the update interaction is done in State.Update() overrides.
 /// </summary>
-internal sealed class StateMachine
+internal sealed class StateMachine<T>
 {
-    public StateMachine(GraphUiContext context)
+    public StateMachine( State<T> defaultState)
     {
-        _currentState = GraphStates.Default;
+        _currentState = defaultState;
     }
 
-    public void UpdateAfterDraw(GraphUiContext c)
+    public void UpdateAfterDraw(T c)
     {
         _currentState.Update(c);
     }
 
-    internal void SetState(State newState, GraphUiContext context)
+    internal void SetState(State<T> newState, T context)
     {
         _currentState.Exit(context);
         _currentState = newState;
         _stateEnterTime = ImGui.GetTime();
         
-        var activeCommand = context.MacroCommand != null ? "ActiveCmd:" + context.MacroCommand : string.Empty;
+        //var activeCommand = context.MacroCommand != null ? "ActiveCmd:" + context.MacroCommand : string.Empty;
         //Log.Debug($"--> {GetMatchingStateFieldName(typeof( GraphStates), _currentState)}  {activeCommand}   {context.ActiveItem}");
         _currentState.Enter(context);
     }
@@ -39,7 +40,7 @@ internal sealed class StateMachine
     /// <summary>
     /// Sadly, since states are defined as fields, we need to use reflection to infer their short names... 
     /// </summary>
-    private static string GetMatchingStateFieldName(Type staticClassType, State state)
+    private static string GetMatchingStateFieldName(Type staticClassType, State<T> state)
     {
         if (!staticClassType.IsClass || !staticClassType.IsAbstract || !staticClassType.IsSealed)
             throw new ArgumentException("Provided type must be a static class.", nameof(staticClassType));
@@ -48,10 +49,10 @@ internal sealed class StateMachine
     
         foreach (var field in fields)
         {
-            if (field.FieldType != typeof(State))
+            if (field.FieldType != typeof(State<T>))
                 continue;
             
-            var fieldValue = (State)field.GetValue(null)!;
+            var fieldValue = (State<T>)field.GetValue(null)!;
             if (fieldValue.Equals(state))
             {
                 //return field.ToString();
@@ -62,8 +63,8 @@ internal sealed class StateMachine
         return string.Empty; 
     }
     
-    private State _currentState;
+    private State<T> _currentState;
     public float StateTime => (float) (ImGui.GetTime() - _stateEnterTime);
     private double _stateEnterTime;
-    public State CurrentState => _currentState;
+    public State<T> CurrentState => _currentState;
 }

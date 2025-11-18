@@ -4,6 +4,7 @@ using T3.Editor.Gui.Interaction;
 using T3.Editor.Gui.Interaction.Keyboard;
 using T3.Editor.Gui.MagGraph.Interaction;
 using T3.Editor.Gui.MagGraph.Model;
+using T3.Editor.Gui.UiHelpers;
 using T3.Editor.UiModel.Commands.Graph;
 using T3.Editor.UiModel.ProjectHandling;
 using MagItemMovement = T3.Editor.Gui.MagGraph.Interaction.MagItemMovement;
@@ -14,7 +15,7 @@ namespace T3.Editor.Gui.MagGraph.States;
 
 internal static class GraphStates
 {
-    internal static State Default
+    internal static State<GraphUiContext> Default
         = new(
               Enter: context =>
                      {
@@ -180,7 +181,7 @@ internal static class GraphStates
              );
     
     /** A special mode to prevent interaction with graph elements */
-    internal static State BackgroundContentIsInteractive
+    internal static State<GraphUiContext> BackgroundContentIsInteractive
         = new(
               Enter: _ => { },
               Update: context =>
@@ -199,7 +200,7 @@ internal static class GraphStates
     /// <summary>
     /// Active while long tapping on background for insertion
     /// </summary>
-    internal static State HoldBackground
+    internal static State<GraphUiContext> HoldBackground
         = new(
               Enter: _ => { },
               Update: context =>
@@ -227,7 +228,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State Placeholder
+    internal static State<GraphUiContext> Placeholder
         = new(
               Enter: _ => { },
               Update: context =>
@@ -241,7 +242,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State HoldItem
+    internal static State<GraphUiContext> HoldItem
         = new(
               Enter: context =>
                      {
@@ -292,7 +293,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State HoldItemAfterLongTap
+    internal static State<GraphUiContext> HoldItemAfterLongTap
         = new(
               Enter: _ => { },
               Update: context =>
@@ -314,7 +315,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State DragItems
+    internal static State<GraphUiContext> DragItems
         = new(
               Enter: context =>
                      {
@@ -339,7 +340,7 @@ internal static class GraphStates
     /// <summary>
     /// Active while long tapping on background for insertion
     /// </summary>
-    internal static State HoldOutput
+    internal static State<GraphUiContext> HoldOutput
         = new(
               Enter: _ => { },
               Update: context =>
@@ -402,7 +403,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State HoldInput
+    internal static State<GraphUiContext> HoldInput
         = new(
               Enter: _ => { },
               Update: context =>
@@ -468,7 +469,7 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-        internal static State HoldingConnectionEnd
+        internal static State<GraphUiContext> HoldingConnectionEnd
         = new(
               Enter: _ => { },
               Update: context =>
@@ -537,7 +538,7 @@ internal static class GraphStates
              );
 
     
-    internal static State DragConnectionEnd
+    internal static State<GraphUiContext> DragConnectionEnd
         = new(
               Enter: _ => { },
               Update: context =>
@@ -587,14 +588,14 @@ internal static class GraphStates
               Exit: _ => { }
              );
 
-    internal static State PickInput
+    internal static State<GraphUiContext> PickInput
         = new(
               Enter: InputPicking.Init,
               Update: InputPicking.DrawHiddenInputSelector,
               Exit: InputPicking.Reset
              );
 
-    internal static State PickOutput
+    internal static State<GraphUiContext> PickOutput
         = new(
               Enter: OutputPicking.Init,
               Update => { }, //OutputPicking.DrawHiddenOutputSelector,
@@ -602,7 +603,7 @@ internal static class GraphStates
              );
 
 
-    internal static State HoldingConnectionBeginning
+    internal static State<GraphUiContext> HoldingConnectionBeginning
         = new(
               Enter: _ => { },
               Update: context =>
@@ -666,7 +667,7 @@ internal static class GraphStates
               _ => { }
              );
 
-    internal static State DragConnectionBeginning
+    internal static State<GraphUiContext> DragConnectionBeginning
         = new(
               Enter: _ => { },
               Update: context =>
@@ -692,28 +693,28 @@ internal static class GraphStates
                       },
               Exit: _ => { });
 
-    internal static State RenameChild
+    internal static State<GraphUiContext> RenameChild
         = new(
               Enter: _ => { },
               Update: _ => { },
               Exit: _ => { }
              );
 
-    internal static State RenameAnnotation
+    internal static State<GraphUiContext> RenameAnnotation
         = new(
               Enter: _ => { },
               Update: _ => { },
               Exit: _ => { }
              );
 
-    internal static State DragAnnotation
+    internal static State<GraphUiContext> DragAnnotation
         = new(
               Enter: _ => { },
               Update: _ => { },
               Exit: _ => { }
              );
 
-    internal static State ResizeAnnotation
+    internal static State<GraphUiContext> ResizeAnnotation
         = new(
               Enter: _ => { },
               Update: AnnotationResizing.Draw,
