@@ -131,24 +131,20 @@ internal static class TourInteraction
 
     private static void TextParagraphs(ReadOnlySpan<char> text, float paragraphSpacing = 6f)
     {
-        int start = 0;
+        var start = 0;
 
         ImGui.BeginGroup();
-        for (int i = 0; i < text.Length; i++)
+        for (var i = 0; i < text.Length; i++)
         {
-            //ImGui.Dummy(new Vector2(1,1));
-            // Look for "\n\n"
-            if (i + 1 < text.Length && text[i] == '\n' )
-            {
-                var paragraph = text.Slice(start, i - start);
-                ImGui.TextUnformatted(paragraph);
+            if (i + 1 >= text.Length || text[i] != '\n') 
+                continue;
+            
+            var paragraph = text.Slice(start, i - start);
+            ImGui.TextUnformatted(paragraph);
 
-                // Add paragraph spacing
-                ImGui.Dummy(new Vector2(0, paragraphSpacing * T3Ui.UiScaleFactor));
-
-                //i += 1; // skip second \n
-                start = i + 1;
-            }
+            // Add paragraph spacing
+            ImGui.Dummy(new Vector2(0, paragraphSpacing * T3Ui.UiScaleFactor));
+            start = i + 1;
         }
 
         // Last paragraph

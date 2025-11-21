@@ -49,13 +49,13 @@ internal static partial class SkillManager
             return;
         }
 
-        _context.GraphWindow.TrySetToProject(openedProject, tryRestoreViewArea:false);
+        _context.GraphWindow.TrySetToProject(openedProject, tryRestoreViewArea: false);
         _context.ProjectView?.FocusViewToSelection();
         _context.OpenedProject = openedProject;
         _context.ProjectView = _context.GraphWindow.ProjectView;
-        
+
         Debug.Assert(_context.OpenedProject != null);
-        
+
         // Keep and apply a new UI state
         _context.PreviousUiState = UiState.KeepUiState();
         LayoutHandling.LoadAndApplyLayoutOrFocusMode(LayoutHandling.Layouts.SkillQuest);
@@ -64,28 +64,27 @@ internal static partial class SkillManager
         {
             Log.Debug("Can't access primary output window");
             UiState.ApplyUiState(_context.PreviousUiState);
-            _context.StateMachine.SetState(SkillQuestStates.Inactive,_context);
+            _context.StateMachine.SetState(SkillQuestStates.Inactive, _context);
             return;
         }
-        
-                         
+
         UiState.HideAllUiElements();
-                         
+
         // Pin output
         var rootInstance = _context.OpenedProject.Structure.GetRootInstance();
         if (rootInstance == null)
         {
             Log.Debug("Failed to load root");
             UiState.ApplyUiState(_context.PreviousUiState);
-            _context.StateMachine.SetState(SkillQuestStates.Inactive,_context);
+            _context.StateMachine.SetState(SkillQuestStates.Inactive, _context);
             return;
         }
+
         outputWindow.Pinning.PinInstance(rootInstance);
         TourInteraction.SetProgressIndex(rootInstance.Symbol.Id, 0);
 
-
         FitViewToSelectionHandling.FitViewToSelection();
-        
+
         _context.StateMachine.SetState(SkillQuestStates.Playing, _context);
     }
 
@@ -95,6 +94,11 @@ internal static partial class SkillManager
         if (_context.StateMachine.CurrentState != SkillQuestStates.Inactive && playmodeEnded)
         {
             _context.StateMachine.SetState(SkillQuestStates.Inactive, _context);
+        }
+
+        if (_context.StateMachine.CurrentState == SkillQuestStates.Completed)
+        {
+            SkillProgressionPopup.Draw();
         }
 
         _context.StateMachine.UpdateAfterDraw(_context);
@@ -114,6 +118,9 @@ internal static partial class SkillManager
             return;
         }
 
+        // Try to prevent saving accidental changes...
+        _context.ProjectView?.CompositionInstance?.GetSymbolUi().ClearModifiedFlag();
+
         if (!outputWindow.EvaluationContext.FloatVariables.TryGetValue(PlayModeProgressVariableId, out var progress))
         {
             Log.Warning($"Can't find progress variable '{PlayModeProgressVariableId}' after evaluation?");
@@ -122,14 +129,23 @@ internal static partial class SkillManager
 
         if (_context.StateMachine.StateTime > 1 && progress >= 1.0f)
         {
-            SaveResult(SkillProgression.LevelResult.States.Completed);
-            ExitPlayMode();
-            UpdateActiveTopicAndLevel(); // Progress to the next level...
-            StartActiveLevel();
+            _context.StateMachine.SetState(SkillQuestStates.Completed, _context);
+            SkillProgressionPopup.Show();
+            //CompleteAndExitLevel();
         }
     }
 
-    private static void SaveResult(SkillProgression.LevelResult.States resultState)
+    internal static void CompleteAndProgressToNextLevel(SkillProgression.LevelResult.States status)
+    {
+        SaveResult(status);
+        ExitPlayMode();
+        UpdateActiveTopicAndLevel(); // Progress to the next level...
+        StartActiveLevel();
+    }
+    
+    
+
+    internal static void SaveResult(SkillProgression.LevelResult.States resultState)
     {
         if (_context.ActiveTopic == null || _context.ActiveLevel == null)
             return;
@@ -145,7 +161,6 @@ internal static partial class SkillManager
                                                                    });
     }
 
-
     private static void InitializeLevels()
     {
         //SkillQuestContext.Topics = CreateMockLevelStructure();
@@ -155,7 +170,7 @@ internal static partial class SkillManager
     /// <summary>
     /// Update active topic and level from the last completed or skipped level in skill progression 
     /// </summary>
-    private static bool UpdateActiveTopicAndLevel()
+    internal static bool UpdateActiveTopicAndLevel()
     {
         if (SkillQuestContext.Topics.Count == 0)
             return false;
@@ -244,7 +259,7 @@ internal static partial class SkillManager
         return false;
     }
 
-    private static void ExitPlayMode()
+    internal static void ExitPlayMode()
     {
         Debug.Assert(_context.OpenedProject != null);
 
@@ -259,11 +274,15 @@ internal static partial class SkillManager
         _context.StateMachine.SetState(SkillQuestStates.Inactive, _context);
     }
 
-    public static bool IsInPlayMode=> _context.StateMachine.CurrentState == SkillQuestStates.Playing;
+    public static bool IsInPlayMode => (_context.StateMachine.CurrentState == SkillQuestStates.Playing ||
+                                       _context.StateMachine.CurrentState == SkillQuestStates.Completed);
 
     public static void DrawLevelHeader()
     {
-        if (!IsInPlaymode)
+        var test1 = _context.StateMachine.CurrentState == SkillQuestStates.Playing;
+        var test2 = _context.StateMachine.CurrentState == SkillQuestStates.Completed;
+        
+        if (!test1 && !test2)
             return;
 
         var topic = _context.ActiveTopic;
@@ -280,7 +299,7 @@ internal static partial class SkillManager
 
         ImGui.PushFont(Fonts.FontSmall);
         ImGui.PushStyleColor(ImGuiCol.Text, UiColors.TextMuted.Rgba);
-        ImGui.TextUnformatted($"{level.Title}  {levelIndex + 1}/{topic.Levels.Count} ");
+        ImGui.TextUnformatted($"{topic.Title}  {levelIndex + 1}/{topic.Levels.Count} ");
         ImGui.PopStyleColor();
         ImGui.PopFont();
 

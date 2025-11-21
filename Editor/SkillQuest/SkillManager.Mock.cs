@@ -30,7 +30,7 @@ internal static partial class SkillManager
                     lastTopic = topic;
                 }
 
-                var topicNamespace = symbol.Namespace.Split(".").Last();
+                var topicNamespace = RemovePrefix(symbol.Namespace.Split(".").Last());
                 
                 topic = new QuestTopic
                             {
@@ -52,7 +52,7 @@ internal static partial class SkillManager
 
             var symbolUi = symbol.GetSymbolUi();
             var topicName = string.IsNullOrEmpty(symbolUi.Description)
-                                ? symbol.Name
+                                ? RemovePrefix(symbol.Name)
                                 : symbolUi.Description;
             
             topic.Levels.Add(new QuestLevel
@@ -64,6 +64,14 @@ internal static partial class SkillManager
         }
         
         return topics;
+    }
+
+    private static string RemovePrefix(string input)
+    {
+        var idx = input.IndexOf('_');
+        return idx >= 0 && idx + 1 < input.Length
+                   ? input[(idx + 1)..]
+                   : input;
     }
     
     private static List<QuestTopic> CreateMockLevelStructure()
