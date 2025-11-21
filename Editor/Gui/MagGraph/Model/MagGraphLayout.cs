@@ -288,9 +288,13 @@ internal sealed class MagGraphLayout
 
         foreach (var item in Items.Values)
         {
+            
             inputLines.Clear();
             outputLines.Clear();
 
+            // if (item.IsCollapsedAway)
+            //     continue;
+            
             var visibleIndex = 0;
 
             switch (item.Variant)
@@ -656,6 +660,9 @@ internal sealed class MagGraphLayout
                 continue;
             }
 
+            if (sourceItem.IsCollapsedAway && targetItem.IsCollapsedAway)
+                continue;
+            
             // Connections between nodes
             if (sourceItem.Instance == null || targetItem.Instance == null)
                 continue;

@@ -6,16 +6,18 @@
   "SymbolChildUis": [
     {
       "ChildId": "00d45d58-e13b-4d34-b2f1-b1d3f9ab1556"/*Raster*/,
+      "AnnotationId": "7fa7fdbc-6e64-4f13-bb08-e4df6b0f8023",
       "Position": {
-        "X": 1201.9397,
-        "Y": 2104.811
+        "X": 1081.4807,
+        "Y": 2187.916
       }
     },
     {
       "ChildId": "43d35c42-9c4b-400b-be28-e714421383b2"/*Blob*/,
+      "AnnotationId": "7fa7fdbc-6e64-4f13-bb08-e4df6b0f8023",
       "Position": {
-        "X": 1201.9397,
-        "Y": 2069.811
+        "X": 1081.4807,
+        "Y": 2152.916
       }
     },
     {
@@ -27,9 +29,10 @@
     },
     {
       "ChildId": "8a190a1c-779e-4fe4-841a-77f2a4b8a602"/*RoundedRect*/,
+      "AnnotationId": "7fa7fdbc-6e64-4f13-bb08-e4df6b0f8023",
       "Position": {
-        "X": 1201.9397,
-        "Y": 2034.811
+        "X": 1081.4807,
+        "Y": 2117.917
       }
     },
     {
@@ -66,7 +69,7 @@
   "Annotations": [
     {
       "Id": "7fa7fdbc-6e64-4f13-bb08-e4df6b0f8023",
-      "Label": "Solution (Hidden)",
+      "Label": "Solution",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -74,8 +77,8 @@
         "W": 1.0
       },
       "Position": {
-        "X": 1170.459,
-        "Y": 1990.8221
+        "X": 1050.0,
+        "Y": 2073.9282
       },
       "Size": {
         "X": 248.70142,

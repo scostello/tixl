@@ -80,6 +80,10 @@ internal static class SymbolUiJson
             writer.WriteObject(JsonKeys.ChildId, childUi.Id);
             {
                 writer.WriteComment(childUi.SymbolChild.ReadableName);
+                if (childUi.CollapsedIntoAnnotationFrameId != Guid.Empty)
+                {
+                    writer.WriteObject(JsonKeys.AnnotationId, childUi.CollapsedIntoAnnotationFrameId);
+                }
 
                 if (childUi.Style != SymbolUi.Child.Styles.Default)
                 {
@@ -426,6 +430,11 @@ internal static class SymbolUiJson
                                 ? childStyle
                                 : SymbolUi.Child.Styles.Default;
 
+            if (JsonUtils.TryGetGuid(childEntry[JsonKeys.AnnotationId], out var annotationId ))
+            {
+                childUi.CollapsedIntoAnnotationFrameId = annotationId;
+            }
+
             var conStyleEntry = childEntry[JsonKeys.ConnectionStyleOverrides];
             if (conStyleEntry != null)
             {
@@ -573,6 +582,7 @@ internal static class SymbolUiJson
         public const string ChildId = nameof(ChildId);
         public const string Position = nameof(Position);
         public const string Annotations = nameof(Annotations);
+        public const string AnnotationId = nameof(AnnotationId);
         public const string Links = nameof(Links);
         public const string Comment = nameof(Comment);
         public const string Id = nameof(Id);

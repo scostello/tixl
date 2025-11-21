@@ -29,6 +29,9 @@ internal sealed partial class MagGraphView
         if (!IsRectVisible(item.Area))
             return;
 
+        if (item.ChildUi != null && item.ChildUi.CollapsedIntoAnnotationFrameId != Guid.Empty)
+            return;
+
         var idleFadeFactor = 1f;
         var idleFactor = 0f;
         if (item.Variant == MagGraphItem.Variants.Operator && item.Instance != null)

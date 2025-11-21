@@ -381,6 +381,9 @@ internal sealed partial class MagGraphView : ScalableCanvas, IGraphView
             }
             else
             {
+                if (item.IsCollapsedAway)
+                    continue;
+                
                 if (item.Variant == MagGraphItem.Variants.Operator)
                 {
                     _context.Selector.AddSelection(item.Selectable, item.Instance);

@@ -6,6 +6,7 @@
   "SymbolChildUis": [
     {
       "ChildId": "32966f34-ef59-45ba-b1db-7443e68f1144"/*Time*/,
+      "AnnotationId": "83594797-3ae4-4ab8-8e04-56af86e881c4",
       "Position": {
         "X": 1153.381,
         "Y": 2196.268
@@ -20,6 +21,7 @@
     },
     {
       "ChildId": "75f735c0-5354-49b6-860b-518557023656"/*RoundedRect*/,
+      "AnnotationId": "83594797-3ae4-4ab8-8e04-56af86e881c4",
       "Position": {
         "X": 1293.381,
         "Y": 2161.268
@@ -28,8 +30,8 @@
     {
       "ChildId": "cd49a76a-c5fc-48c2-9259-db7a801a49fc"/*ImageResult*/,
       "Position": {
-        "X": 1686.2451,
-        "Y": 2029.0358
+        "X": 1533.8265,
+        "Y": 1936.5198
       }
     },
     {
@@ -44,15 +46,15 @@
     {
       "OutputId": "23bc598c-e87d-4993-9e09-b4676e302e61"/*ColorBuffer*/,
       "Position": {
-        "X": 1686.2451,
-        "Y": 2099.0356
+        "X": 1533.8265,
+        "Y": 2006.5195
       }
     }
   ],
   "Annotations": [
     {
       "Id": "83594797-3ae4-4ab8-8e04-56af86e881c4",
-      "Label": "Solution (Hidden)",
+      "Label": "Solution",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -99,6 +101,11 @@
       "Id": "ae0d4672-9ad7-416b-bbba-d3a860208789",
       "ChildId": "de17e3f3-f79c-4648-9689-27d7187dc711",
       "Title": "Drop the end of the connection onto the [RoundedRect] and pick Rotate from the popup.\nIf you want to tidy things up, you can now snap to the connected input."
+    },
+    {
+      "Id": "7d0f771c-e91c-4761-b39f-c76d64edd4a3",
+      "ChildId": "32966f34-ef59-45ba-b1db-7443e68f1144",
+      "Title": ""
     }
   ]
 }

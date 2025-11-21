@@ -26,16 +26,18 @@
     },
     {
       "ChildId": "adaa629e-78b0-42a5-b618-fbfcad511e66"/*RoundedRect*/,
+      "AnnotationId": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
       "Position": {
-        "X": 1263.5664,
-        "Y": 2079.2727
+        "X": 1261.2189,
+        "Y": 2105.4292
       }
     },
     {
       "ChildId": "b58f1da3-be7a-440f-9fc4-0fce8131e2e7"/*Raster*/,
+      "AnnotationId": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
       "Position": {
-        "X": 1263.5664,
-        "Y": 2114.2727
+        "X": 1261.2189,
+        "Y": 2140.4287
       }
     },
     {
@@ -58,7 +60,7 @@
   "Annotations": [
     {
       "Id": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
-      "Label": "Solution (hidden)",
+      "Label": "Solution",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -66,8 +68,8 @@
         "W": 1.0
       },
       "Position": {
-        "X": 1225.0,
-        "Y": 2030.0
+        "X": 1235.8048,
+        "Y": 2004.4917
       },
       "Size": {
         "X": 227.05371,

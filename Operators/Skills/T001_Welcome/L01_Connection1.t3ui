@@ -20,6 +20,7 @@
     },
     {
       "ChildId": "db2c4eab-f92a-4d5d-a465-dbe30c438daf"/*RoundedRect*/,
+      "AnnotationId": "0686ad8d-9d20-4ced-8bad-2abff7ce1051",
       "Position": {
         "X": 1291.7074,
         "Y": 2096.5342
@@ -38,7 +39,7 @@
   "Annotations": [
     {
       "Id": "0686ad8d-9d20-4ced-8bad-2abff7ce1051",
-      "Label": "Solution (hidden)",
+      "Label": "Solution",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
