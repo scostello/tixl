@@ -13,9 +13,6 @@ namespace Lib.flow.skillQuest{
         [Output(Guid = "25709fa8-cbd8-4e54-9f9e-f92a4b3e2f65")]
         public readonly Slot<Texture2D> Output = new Slot<Texture2D>();
 
-        [Output(Guid = "88a4099f-357e-4abb-84bb-6ac018e52886")]
-        public readonly Slot<bool> Completed = new Slot<bool>();
-
         [Input(Guid = "a8d44123-99b4-4285-82f5-84531f0e27d3")]
         public readonly InputSlot<T3.Core.DataTypes.Texture2D> YourSolution = new InputSlot<T3.Core.DataTypes.Texture2D>();
 

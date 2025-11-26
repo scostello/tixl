@@ -3,7 +3,7 @@
   "Inputs": [],
   "Children": [
     {
-      "Id": "0f40b82e-f22d-4119-9f9a-58f74e7ed42a"/*ImageResult*/,
+      "Id": "0f40b82e-f22d-4119-9f9a-58f74e7ed42a"/*ImageQuiz*/,
       "SymbolId": "b1cb8864-0d51-4b7f-96eb-4c6267d4b216",
       "InputValues": [
         {

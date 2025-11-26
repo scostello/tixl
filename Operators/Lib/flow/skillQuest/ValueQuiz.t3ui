@@ -6,15 +6,15 @@
       "InputId": "270bda80-7f81-4f31-adb4-9cd5e8aea693"/*Yours*/,
       "Relevancy": "Required",
       "Position": {
-        "X": 782.41724,
-        "Y": -957.7543
+        "X": 473.88983,
+        "Y": -1128.3794
       }
     },
     {
       "InputId": "ba4714ca-594a-4fab-aa01-bf02d1164eb2"/*DifferenceRange*/,
       "Position": {
-        "X": 922.41724,
-        "Y": -887.7543
+        "X": 584.907,
+        "Y": -706.37756
       },
       "GroupTitle": "Additional Parameters...",
       "Min": 0.003,
@@ -25,8 +25,8 @@
       "InputId": "c09a529a-dfe2-4bf8-86ce-369aeadbee4a"/*Goal*/,
       "Relevancy": "Required",
       "Position": {
-        "X": 782.41724,
-        "Y": -922.7543
+        "X": 483.23914,
+        "Y": -1024.8175
       }
     }
   ],
@@ -34,22 +34,29 @@
     {
       "ChildId": "176abda2-2366-44ed-9c16-8b342187ccd0"/*_ValueQuizGraph*/,
       "Position": {
-        "X": 922.41724,
-        "Y": -957.7543
+        "X": 613.88983,
+        "Y": -1128.3794
       }
     },
     {
-      "ChildId": "71012196-b196-4aec-a225-278201d50180"/*ImageQuiz*/,
+      "ChildId": "34eb4f91-fa37-4638-8657-b1484ddf56d7"/*CompareFloatLists*/,
       "Position": {
-        "X": 1062.4172,
-        "Y": -957.7543
+        "X": 1038.6406,
+        "Y": -978.7955
+      }
+    },
+    {
+      "ChildId": "663fff5b-6a9f-41e0-9884-bc6595328279"/*_QuizUp*/,
+      "Position": {
+        "X": 1283.061,
+        "Y": -1111.5164
       }
     },
     {
       "ChildId": "a58041c7-1de9-4bf5-99a0-7e738a29af34"/*_ValueQuizGraph*/,
       "Position": {
-        "X": 922.41724,
-        "Y": -922.7543
+        "X": 623.23914,
+        "Y": -1024.8175
       }
     }
   ],
@@ -57,8 +64,8 @@
     {
       "OutputId": "6fbc9fd1-58c2-4b0b-accb-9850a8835120"/*Output*/,
       "Position": {
-        "X": 1062.4172,
-        "Y": -852.7543
+        "X": 1477.9943,
+        "Y": -1100.1996
       }
     }
   ]

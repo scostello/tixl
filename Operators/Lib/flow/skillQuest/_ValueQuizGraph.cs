@@ -12,6 +12,9 @@ namespace Lib.flow.skillQuest{
         [Output(Guid = "88844b1e-255e-4783-a906-239fefe38afd")]
         public readonly Slot<Texture2D> ColorBuffer = new Slot<Texture2D>();
 
+        [Output(Guid = "a1a8083d-034f-4520-9a65-1f11f16cf93f")]
+        public readonly Slot<System.Collections.Generic.List<float>> Values = new Slot<System.Collections.Generic.List<float>>();
+
 
         [Input(Guid = "afcdab0a-b859-4137-82de-3fc20f306d57")]
         public readonly InputSlot<float> Value = new InputSlot<float>();
