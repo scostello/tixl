@@ -49,9 +49,9 @@
       "SymbolId": "bf7fcd04-0cf6-4518-86cc-48f74483d98d",
       "InputValues": [
         {
-          "Id": "202340b4-0629-40a1-9399-0cda047df116"/*Rotate*/,
+          "Id": "d2401798-593b-4cc3-85d8-3570ddec1f2a"/*Scale*/,
           "Type": "System.Single",
-          "Value": 13876.9
+          "Value": 1.0
         }
       ],
       "Outputs": []
@@ -75,12 +75,6 @@
       "SourceSlotId": "babd085b-5099-4ddb-87d6-ab9d983067f1",
       "TargetParentOrChildId": "cd49a76a-c5fc-48c2-9259-db7a801a49fc",
       "TargetSlotId": "629ec47f-64d7-4c05-a5b1-29fe9303c8eb"
-    },
-    {
-      "SourceParentOrChildId": "de17e3f3-f79c-4648-9689-27d7187dc711",
-      "SourceSlotId": "babd085b-5099-4ddb-87d6-ab9d983067f1",
-      "TargetParentOrChildId": "cd49a76a-c5fc-48c2-9259-db7a801a49fc",
-      "TargetSlotId": "a8d44123-99b4-4285-82f5-84531f0e27d3"
     }
   ]
 }

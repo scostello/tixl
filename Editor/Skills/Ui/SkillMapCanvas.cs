@@ -29,7 +29,7 @@ internal sealed class SkillMapCanvas : HexCanvas
         return isAnyItemHovered;
     }
 
-    public void FocusToActiveTopics(HashSet<QuestTopic> selection)
+    public void FocusToActiveTopics(HashSet<QuestTopic> selection, float padding = 160)
     {
         if (selection.Count == 0)
             return;
@@ -50,7 +50,7 @@ internal sealed class SkillMapCanvas : HexCanvas
             }
         }
 
-        canvasArea.Expand(160);
+        canvasArea.Expand(padding);
         FitAreaOnCanvas(canvasArea);
     }
 

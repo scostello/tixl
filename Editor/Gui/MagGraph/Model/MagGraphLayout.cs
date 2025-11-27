@@ -50,6 +50,11 @@ internal sealed class MagGraphLayout
         if (!SymbolUiRegistry.TryGetSymbolUi(compositionOp.Symbol.Id, out var parentSymbolUi))
             return;
 
+        if (StructureFlaggedAsChanged)
+        {
+            context.CompositionInstance.GetSymbolUi().FlagAsModified();
+        }
+
         if (forceUpdate || FrameStats.Last.UndoRedoTriggered || StructureFlaggedAsChanged ||
             HasCompositionDataChanged(compositionOp.Symbol, ref _compositionModelHash))
             RefreshDataStructure(context, parentSymbolUi);

@@ -7,6 +7,7 @@ using T3.Editor.Gui.Input;
 using T3.Editor.Gui.Styling;
 using T3.Editor.Gui.UiHelpers;
 using T3.Editor.Skills.Data;
+using T3.Editor.Skills.Training;
 using T3.Editor.UiModel.Selection;
 
 namespace T3.Editor.Skills.Ui;
@@ -27,30 +28,30 @@ internal static class SkillMapEditor
         ImGui.SetNextWindowSize(new Vector2(500, 500) * T3Ui.UiScaleFactor, ImGuiCond.Once);
         if (ImGui.Begin("Edit skill map", ref _isOpen))
         {
-            ImGui.BeginChild("LevelList", new Vector2(120 * T3Ui.UiScaleFactor, 0));
-            {
-                ImGui.Indent(10);
-
-                for (var index = 0; index < SkillMapData.Data.Topics.Count; index++)
-                {
-                    var t = SkillMapData.Data.Topics[index];
-                    ImGui.PushID(index);
-
-                    if (ImGui.Selectable($"{t.Title}", _selectedTopics.Contains(t)))
-                    {
-                        _selectedTopics.Clear();
-                        _selectedTopics.Add(t);
-                    }
-
-                    ImGui.PopID();
-                }
-
-                ImGui.Unindent(10);
-                FormInputs.AddVerticalSpace();
-            }
-            ImGui.EndChild();
-
-            ImGui.SameLine();
+            // ImGui.BeginChild("LevelList", new Vector2(120 * T3Ui.UiScaleFactor, 0));
+            // {
+            //     ImGui.Indent(10);
+            //
+            //     for (var index = 0; index < SkillMapData.Data.Topics.Count; index++)
+            //     {
+            //         var t = SkillMapData.Data.Topics[index];
+            //         ImGui.PushID(index);
+            //
+            //         if (ImGui.Selectable($"{t.Title}", _selectedTopics.Contains(t)))
+            //         {
+            //             _selectedTopics.Clear();
+            //             _selectedTopics.Add(t);
+            //         }
+            //
+            //         ImGui.PopID();
+            //     }
+            //
+            //     ImGui.Unindent(10);
+            //     FormInputs.AddVerticalSpace();
+            // }
+            // ImGui.EndChild();
+            //
+            // ImGui.SameLine();
             ImGui.BeginChild("Inner", new Vector2(-200, 0), false, ImGuiWindowFlags.NoMove);
             {
                 ImGui.SameLine();
@@ -58,6 +59,15 @@ internal static class SkillMapEditor
                 if (ImGui.Button("Save"))
                 {
                     SkillMapData.Save();
+                }
+
+                if (ImGui.IsWindowAppearing())
+                {
+                    if (_selectedTopics.Count == 0)
+                    {
+                        var tmp = new HashSet<QuestTopic>(SkillMapData.Data.Topics);
+                        _canvas.FocusToActiveTopics(tmp);
+                    }
                 }
 
                 DrawInteractiveMap();
@@ -196,14 +206,6 @@ internal static class SkillMapEditor
         }
     }
 
-    private enum States
-    {
-        Default,
-        HoldingItem,
-        LinkingItems,
-        DraggingItems,
-    }
-
     private static void DrawSidebar()
     {
         if (_selectedTopics.Count != 1)
@@ -240,6 +242,12 @@ internal static class SkillMapEditor
         {
         }
 
+        FormInputs.DrawFieldSetHeader("Requires");
+        if (FormInputs.AddEnumDropdown(ref topic.Requirement, "##Requirements"))
+        {
+        }
+
+        
         FormInputs.DrawFieldSetHeader("Namespace");
         FormInputs.AddStringInput("##NameSpace", ref topic.Namespace);
 
@@ -249,9 +257,6 @@ internal static class SkillMapEditor
 
         ImGui.PopID();
     }
-
-    private static Vector2 _dampedHoverCanvasPos;
-    private static readonly HashSet<int> _blockedCellIds = new(64);
 
     private static void DrawHoveredEmptyCell(ImDrawListPtr dl, HexCanvas.Cell cell)
     {
@@ -358,12 +363,23 @@ internal static class SkillMapEditor
         }
     }
 
+    private enum States
+    {
+        Default,
+        HoldingItem,
+        LinkingItems,
+        DraggingItems,
+    }
+
+    private static States _state;
+
+    private static Vector2 _dampedHoverCanvasPos;
+    private static readonly HashSet<int> _blockedCellIds = new(64);
     private static QuestTopic? _draggedTopic;
     private static bool _isOpen;
     private static readonly HashSet<QuestTopic> _selectedTopics = new();
     private static bool _focusTopicNameInput;
     private static QuestTopic.TopicTypes _lastType = QuestTopic.TopicTypes.Numbers;
-    private static States _state;
     private static readonly SelectionFence _fence = new();
     private static readonly SkillMapCanvas _canvas = new();
 }

@@ -103,6 +103,7 @@ public static partial class T3Ui
         _userNameDialog.Draw();
         AboutDialog.Draw();
         ExitDialog.Draw();
+        SkillMapPopup.Draw();
 
         if (IsWindowLayoutComplete())
         {

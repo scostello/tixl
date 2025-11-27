@@ -14,7 +14,7 @@ using Vector4 = System.Numerics.Vector4;
 namespace T3.Editor.Skills.Ui;
 
 /// <summary>
-/// A dialog that is shown after level completed.
+/// A dialog that is shown after level completion.
 /// </summary>
 internal static class SkillProgressionPopup
 {
@@ -22,9 +22,8 @@ internal static class SkillProgressionPopup
     {
         ImGui.OpenPopup(ProgressionPopupId);
         StarShowerEffect.Reset();
-        _appearTime = ImGui.GetTime();
         
-        if (!SkillTraining.TryGetActiveTopicAndLevel(out var topic, out var previousLevel))
+        if (!SkillTraining.TryGetActiveTopicAndLevel(out var topic, out _))
             return;
 
         _topicSelection.Clear();
@@ -42,29 +41,49 @@ internal static class SkillProgressionPopup
         ImGui.SetNextWindowSize(popUpSize, ImGuiCond.Always);
         ImGui.SetNextWindowPos(pos);
 
-        if (!SkillTraining.TryGetActiveTopicAndLevel(out var topic, out var previousLevel))
+        if (!SkillTraining.TryGetActiveTopicAndLevel(out var topic, out var activeLevel))
             return;
 
+        bool keepOpen = true;
+
+        //if (ImGui.BeginPopupModal("ProgressionPopup", ref keepOpen))
+        
         ImGui.PushStyleColor(ImGuiCol.PopupBg, UiColors.BackgroundFull.Rgba);
         if (ImGui.BeginPopup("ProgressionPopup", ImGuiWindowFlags.NoResize |
-                                                 ImGuiWindowFlags.NoMove |
-                                                 ImGuiWindowFlags.Modal))
+                                                                  ImGuiWindowFlags.NoMove))
         {
-            var index = topic.Levels.IndexOf(previousLevel);
+            var index = topic.Levels.IndexOf(activeLevel);
             Debug.Assert(index >= 0);
-            // if (ImGui.Button("Test"))
-            // {
-            //     StarShowerEffect.Reset();
-            // }
 
-            if (index < topic.Levels.Count - 1)
+            if (index < 1 )
             {
-                var nextLevel = topic.Levels[index + 1];
-                DrawNextLevelContent(topic, previousLevel, nextLevel, index);
+                CustomComponents.EmptyWindowMessage("Can't find level...");
+            }
+            else
+            {
+                var previousLevel = topic.Levels[index - 1];
+                
+                if (index == topic.Levels.Count - 1)
+                {
+                    DrawTopicCompletedContent(topic, previousLevel, activeLevel,  index);
+                }
+                else if( index < topic.Levels.Count - 1)
+                {
+                    DrawNextLevelContent(topic,previousLevel, activeLevel,  index);
+                }
+                else
+                {
+                    CustomComponents.EmptyWindowMessage("Can't find level...");
+                }
             }
 
             DrawActions();
 
+            if (ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+                StarShowerEffect.Reset();
+            }
+            
             ImGui.EndPopup();
             StarShowerEffect.DrawAndUpdate();
         }
@@ -72,7 +91,6 @@ internal static class SkillProgressionPopup
         ImGui.PopStyleColor();
     }
 
-    private static HashSet<QuestTopic>  _topicSelection = [];
     
     private static void DrawNextLevelContent(QuestTopic topic, QuestLevel previousLevel, QuestLevel nextLevel, int index)
     {
@@ -89,37 +107,15 @@ internal static class SkillProgressionPopup
             ImGui.BeginChild("Map", new Vector2(leftWidth, 0), false, ImGuiWindowFlags.NoBackground);
             {
                 _topicSelection??= new();
-                _mapCanvas.DrawContent(null, out _, _topicSelection);
+                var itemHovered=_mapCanvas.DrawContent(null, out _, _topicSelection);
+                if (!itemHovered && ImGui.IsWindowHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                {
+                    //SkillMapPopup.Show();
+                }                
             }
             ImGui.EndChild();
             ImGui.SameLine();
             
-            // ImGui.BeginChild("Left", new Vector2(leftWidth, 0), false, ImGuiWindowFlags.NoBackground);
-            // {
-            //     var donutSize = 60 * uiScale;
-            //
-            //     // center the donut in the left column
-            //     var cp = ImGui.GetCursorPos();
-            //     cp.X += (leftWidth - donutSize) * 0.5f;
-            //     cp.Y += 10 * uiScale;
-            //     ImGui.SetCursorPos(cp);
-            //
-            //     var torusCenter = ImGui.GetCursorScreenPos() + new Vector2(100, 120);
-            //     var progress = (index + 1f) / topic.Levels.Count;
-            //     DrawTorusProgress(dl, torusCenter, donutSize, 1, UiColors.BackgroundFull.Fade(0.6f));
-            //     DrawTorusProgress(dl, torusCenter, donutSize, progress, UiColors.StatusActivated);
-            //
-            //     ImGui.SetCursorPos(cp + new Vector2(0, donutSize * 0.5f - Fonts.FontNormal.FontSize * 0.5f));
-            //     ImGui.PushFont(Fonts.FontLarge);
-            //     CenteredText($"{index + 1} / {topic.Levels.Count}");
-            //     ImGui.PopFont();
-            //
-            //     ImGui.PushFont(Fonts.FontNormal);
-            //     CenteredText(topic.Title);
-            //     ImGui.PopFont();
-            // }
-            // ImGui.EndChild();
-
             ImGui.SameLine(0, 4);
 
             ImGui.BeginChild("Right", new Vector2(0, 0), false, ImGuiWindowFlags.NoBackground);
@@ -146,13 +142,64 @@ internal static class SkillProgressionPopup
         ImGui.EndChild();
     }
 
+    
+    private static void DrawTopicCompletedContent(QuestTopic topic, QuestLevel previousLevel, QuestLevel nextLevel, int index)
+    {
+        var uiScale = T3Ui.UiScaleFactor;
+        var dl = ImGui.GetWindowDrawList();
+
+        var leftWidth = 240 * uiScale;
+        ImGui.BeginChild("UpperArea", new Vector2(0, -40 * uiScale), false, ImGuiWindowFlags.NoBackground);
+        {
+            var area = ImRect.RectWithSize(ImGui.GetWindowPos(), ImGui.GetWindowSize());
+            area.Expand(-10);
+            dl.AddRectFilled(area.Min + new Vector2(leftWidth,0), area.Max, UiColors.WindowBackground, 7 * uiScale);
+
+            ImGui.BeginChild("Map", new Vector2(leftWidth, 0), false, ImGuiWindowFlags.NoBackground);
+            {
+                _topicSelection??= new();
+                var itemHovered=_mapCanvas.DrawContent(null, out _, _topicSelection);
+                if (!itemHovered && ImGui.IsWindowHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+                {
+                    //SkillMapPopup.Show();
+                }                
+            }
+            ImGui.EndChild();
+            ImGui.SameLine();
+            
+            ImGui.SameLine(0, 4);
+
+            ImGui.BeginChild("Right", new Vector2(0, 0), false, ImGuiWindowFlags.NoBackground);
+            {
+                FormInputs.AddVerticalSpace(30);
+                ImGui.Indent(20 * T3Ui.UiScaleFactor);
+
+                // COMPLETED section
+                CustomComponents.StylizedText("COMPLETED", Fonts.FontSmall, UiColors.Text.Fade(0.3f));
+                CustomComponents.StylizedText(previousLevel.Title, Fonts.FontLarge, UiColors.Text.Fade(0.3f));
+
+                FormInputs.AddVerticalSpace();
+                ImGui.Separator();
+
+                FormInputs.AddVerticalSpace();
+                CustomComponents.StylizedText("NEXT UP", Fonts.FontSmall, UiColors.Text.Fade(0.3f));
+
+                ImGui.PushFont(Fonts.FontLarge);
+                ImGui.TextWrapped(nextLevel.Title);
+                ImGui.PopFont();
+            }
+            ImGui.EndChild();
+        }
+        ImGui.EndChild();
+    }
+    
+    
     private static void DrawActions()
     {
         var indent = 10;
         ImGui.Indent(indent);
         var style = ImGui.GetStyle();
         var btnH = ImGui.GetFrameHeight();
-        //var wBack = ImGui.CalcTextSize("Back to Hub").X + style.FramePadding.X * 2;
         var wSkip = ImGui.CalcTextSize("Skip").X + style.FramePadding.X * 2;
         var wCont = ImGui.CalcTextSize("Continue").X + style.FramePadding.X * 2;
         var totalW = wSkip + wCont + style.ItemSpacing.X * 2 + indent;
@@ -207,11 +254,9 @@ internal static class SkillProgressionPopup
         dl.PathStroke(color, ImDrawFlags.None, 6);
     }
 
-
-
+    private static HashSet<QuestTopic>  _topicSelection = [];
     private const string ProgressionPopupId = "ProgressionPopup";
-    private static double _appearTime;
-    private static SkillMapCanvas _mapCanvas = new();
+    private static readonly SkillMapCanvas _mapCanvas = new();
 }
 
 /// <summary>
@@ -219,10 +264,12 @@ internal static class SkillProgressionPopup
 /// </summary>
 internal static class StarShowerEffect
 {
-    static internal void DrawAndUpdate()
+    internal static void DrawAndUpdate()
     {
         var center = GetCenter();
         var dl = ImGui.GetForegroundDrawList();
+
+        var progress = (float)(ImGui.GetTime() - _startTime)/3.0f;
 
         for (var index = 0; index < _positions.Length; index++)
         {
@@ -232,17 +279,19 @@ internal static class StarShowerEffect
             var dFromCenter = p - center;
             var l = dFromCenter.Length();
             var dNorm = Vector2.Normalize(dFromCenter);
-            var f = 50f / (l + 5f) + 0.2f * rand;
-            p += f * dNorm * 40f * f + new Vector2(0, 6f) * (f + 0.7f);
+            //var f = 50f / (progress + 5f) + 0.2f * rand;
+            var f = progress + 0.1f * rand;
+            p += f * dNorm * (30/ (2*f+1)) + new Vector2(0, 3f) * (f + 0.5f);
 
             _positions[index] = p;
 
-            Icons.DrawIconAtScreenPosition(Icon.Star, p, dl, Color.Orange.Fade((2 * f).Clamp(0, 1)));
+            Icons.DrawIconAtScreenPosition(Icon.Star, p, new Vector2(Icons.FontSize * 4f), dl, Color.Orange.Fade((1- 1.5f*f).Clamp(0, 1)));
         }
     }
 
     internal static void Reset()
     {
+        _startTime = ImGui.GetTime();
         float radius = 30;
         var center = GetCenter() + new Vector2(0, -10);
         for (var index = 0; index < _positions.Length; index++)
@@ -258,10 +307,11 @@ internal static class StarShowerEffect
         var vp = ImGui.GetMainViewport();
         var windowSize = vp.Size;
         var center = windowSize * 0.5f;
-        return center + new Vector2(-220, -40) * T3Ui.UiScaleFactor;
+        return center + new Vector2(-220, -10) * T3Ui.UiScaleFactor;
     }
 
     private static readonly Vector2[] _positions = new Vector2[Count];
 
     private const int Count = 30;
+    private static double _startTime;
 }

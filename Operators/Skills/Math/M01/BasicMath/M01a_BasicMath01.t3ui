@@ -5,6 +5,7 @@
   "SymbolChildUis": [
     {
       "ChildId": "64ea0207-e4f0-4f0f-934b-5da16bbdd0d7"/*Value*/,
+      "AnnotationId": "bc307786-333f-4896-b878-9dc3deedff7e",
       "Position": {
         "X": 1233.0248,
         "Y": 2040.2322
@@ -13,7 +14,7 @@
     {
       "ChildId": "d31fd376-18a9-4e89-bbdf-8b8e47dd7feb"/*Value*/,
       "Position": {
-        "X": 1247.703,
+        "X": 1233.0248,
         "Y": 1908.7502
       }
     },
@@ -38,6 +39,7 @@
     {
       "Id": "bc307786-333f-4896-b878-9dc3deedff7e",
       "Label": "Solution",
+      "Collapsed": "True",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -58,27 +60,29 @@
     {
       "Id": "c81d310b-d242-4fec-9b77-eac954aa9e64",
       "ChildId": "fd80fdde-824c-4946-815b-6acc418248a1",
-      "Title": "If you're like me, you might have terrible memories about math. Maybe it was your teachers, the distracting crush on the table nearby. Or it was the all to prominent question \n\"What do it need that for?!\"\nIn TiXL working with Math can be fun and intuitive. This section of the Skill Quest will bring back everything you need to know..."
+      "Title": "Some people have not to good memories about math because most teachers couldn't give a good reason, why you would need that for.\nIn TiXL working using math is fun and intuitive. This following levels will teach you everything you need to know..."
     },
     {
       "Id": "91d3dc49-3ebf-4e81-bfc8-9f0bb9b333ef",
       "ChildId": "d31fd376-18a9-4e89-bbdf-8b8e47dd7feb",
-      "Title": "In TiXL you  can use math-operators to control parameters and animation.\nThere are different type of numbers. We will start with float-values and cover other types later."
-    },
-    {
-      "Id": "ebe363a3-df9e-45ef-a7e5-9779db1e2ad4",
-      "ChildId": "d31fd376-18a9-4e89-bbdf-8b8e47dd7feb",
-      "Title": "The most basic Operator is [Value].\nBecause it's quite important, you can edit it's parameters with different methods:\n1. Selecting the op and adjusting using the parameter window.\n2. Holding the CTRL key and dragging the op.\n"
+      "Title": "In TiXL you can use math operators to control parameters and animation.\nThere are different \"types\" of numbers. We will start with float-values and cover other types later..."
     },
     {
       "Id": "add02c1c-ecbf-4d7e-a630-8c42faae0740",
       "ChildId": "d31fd376-18a9-4e89-bbdf-8b8e47dd7feb",
-      "Title": "Connect this op to the [ValueQuiz]."
+      "Title": "Connect this op to the [ValueQuiz].",
+      "Style": "TourPoint"
     },
     {
       "Id": "43d4e847-619f-4053-8a07-eefc0db31f42",
       "ChildId": "fd80fdde-824c-4946-815b-6acc418248a1",
-      "Title": "The [ValueQuiz] show a value and a graph at the bottom.\nTry to find the value, the to solve that goal..."
+      "Title": "The [ValueQuiz] show a required value and a graph at the bottom.\nTry to find the value, the to solve that goal..."
+    },
+    {
+      "Id": "ebe363a3-df9e-45ef-a7e5-9779db1e2ad4",
+      "ChildId": "d31fd376-18a9-4e89-bbdf-8b8e47dd7feb",
+      "Title": "The most basic Operator is [Value].\nYou can edit its parameter with different methods:\n1. Select the Operator and use the Parameter Window.\n2. Drag on the Operator in the graph while holding the CTRL key.\n",
+      "Style": "TourPoint"
     }
   ]
 }

@@ -30,6 +30,11 @@ internal static class TourInteraction
         if (compositionUi.TourPoints.Count == 0)
             return;
 
+        if (ImGui.IsWindowAppearing())
+        {
+            _lastClickTime = ImGui.GetTime();
+        }
+        
         SkillTraining.DrawLevelHeader();
 
         FormInputs.AddVerticalSpace(10);
@@ -148,7 +153,7 @@ internal static class TourInteraction
             var buttonLabel = point.Style switch
                                   {
                                       TourPoint.Styles.Comment   => "Continue...",
-                                      TourPoint.Styles.TourPoint => "Okay...",
+                                      TourPoint.Styles.TourPoint => "Continue when ready",
                                       TourPoint.Styles.Tip       => "Got it!",
                                       _                          => throw new ArgumentOutOfRangeException()
                                   };

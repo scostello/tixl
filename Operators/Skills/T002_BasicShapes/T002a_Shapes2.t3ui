@@ -12,7 +12,7 @@
     },
     {
       "ChildId": "3c5be7bc-2cc9-4243-8751-8f1f47ba10ff"/*Time*/,
-      "AnnotationId": "d2d45d3a-4033-42d4-907d-47ffb5ccb42b",
+      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
       "Position": {
         "X": 1063.3497,
         "Y": 2183.051
@@ -34,7 +34,7 @@
     },
     {
       "ChildId": "c52bafb2-94f4-4b69-9efa-638bbd84f0ea"/*Multiply*/,
-      "AnnotationId": "d2d45d3a-4033-42d4-907d-47ffb5ccb42b",
+      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
       "Position": {
         "X": 1203.35,
         "Y": 2183.051
@@ -42,7 +42,7 @@
     },
     {
       "ChildId": "d5e1ae91-9071-4f4e-bc37-cce8f37c97b7"/*RoundedRect*/,
-      "AnnotationId": "d2d45d3a-4033-42d4-907d-47ffb5ccb42b",
+      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
       "Position": {
         "X": 1343.35,
         "Y": 2148.051
@@ -69,6 +69,7 @@
     {
       "Id": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
       "Label": "Solution",
+      "Collapsed": "True",
       "Color": {
         "X": 0.6,
         "Y": 0.6,

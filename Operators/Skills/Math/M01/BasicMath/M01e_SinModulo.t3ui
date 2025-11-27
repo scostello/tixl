@@ -69,6 +69,7 @@
     {
       "Id": "bc8e3da9-8b47-4608-9307-975f5e3bc9db",
       "Label": "Solution",
+      "Collapsed": "True",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -89,7 +90,7 @@
     {
       "Id": "8b490de1-24f8-458e-af65-0f89159f0ef1",
       "ChildId": "00000000-0000-0000-0000-000000000000",
-      "Title": "Combining few simple operators can have surprising and unexpected results."
+      "Title": "Combining just a few simple operators can have surprising and unexpected results."
     },
     {
       "Id": "d192114b-3170-45f5-9391-75b20a464140",

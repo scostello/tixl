@@ -56,7 +56,12 @@ internal static class SkillQuestPanel
             FormInputs.AddVerticalSpace(5);
             ImGui.PushStyleColor(ImGuiCol.ChildBg, UiColors.BackgroundFull.Rgba);
             ImGui.BeginChild("Map", new Vector2(180, 0), false);
-            _mapCanvas.DrawContent(HandleTopicInteraction2, out _, _selectedTopic);
+            var itemHovered = _mapCanvas.DrawContent(HandleTopicInteraction2, out _, _selectedTopic);
+            if (!itemHovered && ImGui.IsWindowHovered() && ImGui.IsMouseClicked(ImGuiMouseButton.Left))
+            {
+                SkillMapPopup.Show();
+            }
+            
             ImGui.EndChild();
             ImGui.PopStyleColor();
 

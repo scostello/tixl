@@ -28,16 +28,16 @@
       "ChildId": "adaa629e-78b0-42a5-b618-fbfcad511e66"/*RoundedRect*/,
       "AnnotationId": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
       "Position": {
-        "X": 1261.2189,
-        "Y": 2105.4292
+        "X": 1238.9639,
+        "Y": 2105.6155
       }
     },
     {
       "ChildId": "b58f1da3-be7a-440f-9fc4-0fce8131e2e7"/*Raster*/,
       "AnnotationId": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
       "Position": {
-        "X": 1261.2189,
-        "Y": 2140.4287
+        "X": 1238.9639,
+        "Y": 2140.615
       }
     },
     {
@@ -61,6 +61,7 @@
     {
       "Id": "e62796c7-c4ac-4081-ab3f-420fe05a2a0a",
       "Label": "Solution",
+      "Collapsed": "True",
       "Color": {
         "X": 0.6,
         "Y": 0.6,
@@ -68,8 +69,8 @@
         "W": 1.0
       },
       "Position": {
-        "X": 1235.8048,
-        "Y": 2004.4917
+        "X": 1213.5498,
+        "Y": 2004.678
       },
       "Size": {
         "X": 227.05371,
@@ -81,7 +82,8 @@
     {
       "Id": "97092ce7-e7fd-4776-b8b6-898e9e762f4f",
       "ChildId": "c3bb7cb9-ceef-43dd-b533-464b1f27201e",
-      "Title": "A very useful feature is dragging something out of a stack...\nThat orange [Blob] is really bright! Try to remove it from the stack, by long-pressing it with the left mouse button dragging it out...\n"
+      "Title": "Sometimes it's useful to drag an Operator out of a stack...\nThat orange [Blob] Operator is really bright! \nTry to remove it from the stack: Just long-press and dragging it out...\n",
+      "Style": "TourPoint"
     }
   ]
 }

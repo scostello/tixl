@@ -48,6 +48,22 @@ internal static class Icons
                           color);
     }
 
+    public static void DrawIconAtScreenPosition(Icon icon,
+                                                Vector2 screenPos,
+                                                Vector2 size,
+                                                ImDrawListPtr drawList,
+                                                Color color)
+    {
+        GetGlyphDefinition(icon, out var uvRange, out _);
+        drawList.AddImage(ImGui.GetIO().Fonts.TexID,
+                          screenPos,
+                          screenPos + size,
+                          uvRange.Min,
+                          uvRange.Max,
+                          color);
+    }
+    
+    
     public static void DrawIconOnLastItem(Icon icon, Color color, float alignment = 0.5f)
     {
         var pos = ImGui.GetItemRectMin();
