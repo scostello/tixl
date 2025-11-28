@@ -1,5 +1,5 @@
 {
-  "Id": "40f7a388-3125-458c-9b57-e2daeea60b9f"/*I01a_Shapes1*/,
+  "Id": "40f7a388-3125-458c-9b57-e2daeea60b9f"/*I01a_DarkSun*/,
   "Description": "The Dark Sun",
   "InputUis": [],
   "SymbolChildUis": [
@@ -7,8 +7,8 @@
       "ChildId": "0d0c414c-70ba-4374-a0a2-d4a594425f62"/*Blob*/,
       "AnnotationId": "656d4f29-3202-45a8-9bf1-957ceba30c00",
       "Position": {
-        "X": 1359.1395,
-        "Y": 2141.0947
+        "X": 1352.2639,
+        "Y": 2141.9663
       }
     },
     {
@@ -22,16 +22,16 @@
       "ChildId": "20873546-a48b-496b-8dc7-3313e66e2559"/*Blob*/,
       "AnnotationId": "656d4f29-3202-45a8-9bf1-957ceba30c00",
       "Position": {
-        "X": 1359.1395,
-        "Y": 2176.0947
+        "X": 1352.2639,
+        "Y": 2176.9663
       }
     },
     {
       "ChildId": "4c01a5ef-6f2e-4413-9cd9-c84cfd8c8d35"/*Blob*/,
       "AnnotationId": "656d4f29-3202-45a8-9bf1-957ceba30c00",
       "Position": {
-        "X": 1359.1395,
-        "Y": 2106.0947
+        "X": 1352.2639,
+        "Y": 2106.9663
       }
     },
     {
@@ -77,8 +77,8 @@
         "W": 1.0
       },
       "Position": {
-        "X": 1336.8756,
-        "Y": 2059.2593
+        "X": 1330.0,
+        "Y": 2060.1309
       },
       "Size": {
         "X": 193.07947,

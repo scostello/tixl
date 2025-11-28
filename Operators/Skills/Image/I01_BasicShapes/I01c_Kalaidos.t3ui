@@ -1,51 +1,51 @@
 {
-  "Id": "98046598-4b25-44d3-95ef-268226a09038"/*T002c_Kalaidos*/,
+  "Id": "98046598-4b25-44d3-95ef-268226a09038"/*I01c_Kalaidos*/,
   "Description": "",
   "InputUis": [],
   "SymbolChildUis": [
     {
+      "ChildId": "13b8427a-b4a2-4cb3-abde-99386d664e68"/*MirrorRepeat*/,
+      "AnnotationId": "ed1b88c6-7ef2-4f1a-b570-c4dbf61194f2",
+      "Position": {
+        "X": 1317.2501,
+        "Y": 2169.3525
+      }
+    },
+    {
       "ChildId": "2b6c7ccf-089a-4586-9277-515bc11a4006"/*MirrorRepeat*/,
       "Position": {
-        "X": 1285.9601,
-        "Y": 1933.2477
+        "X": 1251.486,
+        "Y": 1923.6543
       }
     },
     {
-      "ChildId": "4a3ee561-e851-4d3b-b0e5-bbc3a4170237"/*RoundedRect*/,
-      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
+      "ChildId": "512ba494-05a6-4fed-b11f-d285bd7ce33c"/*MirrorRepeat*/,
       "Position": {
-        "X": 1285.9601,
-        "Y": 2118.6863
+        "X": 1251.486,
+        "Y": 1989.6571
       }
     },
     {
-      "ChildId": "56ee6fd5-52b1-4cbe-a943-60f8b7a94f4d"/*MirrorRepeat*/,
-      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
+      "ChildId": "78634de5-dd36-48dc-81fa-0b42fe71f2da"/*Time*/,
+      "AnnotationId": "ed1b88c6-7ef2-4f1a-b570-c4dbf61194f2",
       "Position": {
-        "X": 1285.9601,
-        "Y": 2188.6863
+        "X": 1131.6339,
+        "Y": 2186.936
       }
     },
     {
-      "ChildId": "7a3b6d9c-bcbb-4356-a39b-191672e28e1c"/*Time*/,
-      "AnnotationId": "e721438d-4362-4b32-a0f7-e654b4cddc4a",
+      "ChildId": "8fa6edbf-9368-43bc-9097-89dd78a241b9"/*MirrorRepeat*/,
+      "AnnotationId": "ed1b88c6-7ef2-4f1a-b570-c4dbf61194f2",
       "Position": {
-        "X": 1145.9601,
-        "Y": 2153.6863
+        "X": 1317.2501,
+        "Y": 2099.3523
       }
     },
     {
-      "ChildId": "88968a4d-3665-460e-9596-18749ed58edb"/*RoundedRect*/,
+      "ChildId": "96a6040b-a96f-45b5-842f-11067c040266"/*Time*/,
       "Position": {
-        "X": 1285.9601,
-        "Y": 1869.12
-      }
-    },
-    {
-      "ChildId": "96206f7e-2d6b-42a2-8126-c9eb222b9538"/*Time*/,
-      "Position": {
-        "X": 1285.9601,
-        "Y": 1797.5781
+        "X": 1251.486,
+        "Y": 1779.4012
       }
     },
     {
@@ -53,6 +53,21 @@
       "Position": {
         "X": 1609.7146,
         "Y": 2018.4391
+      }
+    },
+    {
+      "ChildId": "d9f887a5-afb1-4099-b3d4-20d6c5b215f3"/*LinearGradient*/,
+      "AnnotationId": "ed1b88c6-7ef2-4f1a-b570-c4dbf61194f2",
+      "Position": {
+        "X": 1177.2501,
+        "Y": 2099.3523
+      }
+    },
+    {
+      "ChildId": "ee124649-1946-4bdf-ba13-53cb895453fd"/*LinearGradient*/,
+      "Position": {
+        "X": 1251.486,
+        "Y": 1854.1033
       }
     }
   ],
@@ -88,14 +103,14 @@
   ],
   "TourPoints": [
     {
-      "Id": "6c3a54ef-c4b6-4528-9030-2dc27c9ce625",
-      "ChildId": "00000000-0000-0000-0000-000000000000",
-      "Title": "We've seen the [RoundedRect] Operator before. For this example, we can leave all of it's parameters as they are."
+      "Id": "dcf690c4-6737-4638-af7a-b95586e8d18b",
+      "ChildId": "2b6c7ccf-089a-4586-9277-515bc11a4006",
+      "Title": "Frequently combining multiple copies of an Operator can lead to very interesting effects.\nConsider this challenge: It looks like the [LinearGradient] is being repeated twice to form this interesting pattern."
     },
     {
-      "Id": "33165ec6-fba2-4505-8cf3-9d1a8c89eb5e",
-      "ChildId": "00000000-0000-0000-0000-000000000000",
-      "Title": "Instead we're going to focus on the [MirrorRepeat] Operator.\nIn the jack of all trades related to reflecting images along an axis.\nTo reproduce the example below you only have to adjust two of its parameters.",
+      "Id": "57ef0f62-5ead-4094-a8a8-55321738fa62",
+      "ChildId": "ee124649-1946-4bdf-ba13-53cb895453fd",
+      "Title": "You need to adjust two parameters of this [LinearGradient]. Can you find, which ones?",
       "Style": "TourPoint"
     }
   ]
