@@ -55,7 +55,8 @@ internal sealed class CommandOutputUi : OutputUi<Command>
         UpdateTextures(device, size, Format.R16G16B16A16_Float);
         var deviceContext = device.ImmediateContext;
         var prevViewports = deviceContext.Rasterizer.GetViewports<RawViewportF>();
-        var prevTargets = deviceContext.OutputMerger.GetRenderTargets(2);
+        
+        RenderTargetView?[]? prevTargetViews = deviceContext.OutputMerger.GetRenderTargets(2);
         deviceContext.Rasterizer.SetViewport(new SharpDX.Viewport(0, 0, size.Width, size.Height, 0.0f, 1.0f));
         deviceContext.OutputMerger.SetTargets(_depthBufferDsv, _colorBufferRtv);
 
@@ -85,18 +86,21 @@ internal sealed class CommandOutputUi : OutputUi<Command>
 
         // Restore previous setup
         deviceContext.Rasterizer.SetViewports(prevViewports);
-        deviceContext.OutputMerger.SetTargets(prevTargets);
+        deviceContext.OutputMerger.SetTargets(prevTargetViews);
 
-        if (prevTargets == null)
+        if (prevTargetViews == null)
         {
             Log.Warning("Can't dispose obsolete RenderTargetView after draw. This indicates corrupted a render context.");
         }
         else
         {
             // Clean up ref counts for RTVs
-            foreach (var t in prevTargets)
+            foreach (var t in prevTargetViews)
             {
-                t?.Dispose();
+                if (t == null || t.IsDisposed)
+                    continue;
+                
+                t.Dispose();
             }
         }
     }
