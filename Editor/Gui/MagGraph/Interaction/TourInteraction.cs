@@ -152,10 +152,11 @@ internal static class TourInteraction
 
             var buttonLabel = point.Style switch
                                   {
-                                      TourPoint.Styles.Info   => "Continue...",
-                                      TourPoint.Styles.InfoFor => "Continue when ready",
-                                      TourPoint.Styles.Tip       => "Got it!",
-                                      _                          => throw new ArgumentOutOfRangeException()
+                                      TourPoint.Styles.Info         => "Continue...",
+                                      TourPoint.Styles.InfoFor      => "Continue when ready",
+                                      TourPoint.Styles.Tip          => "Got it!",
+                                      TourPoint.Styles.CallToAction => "Did it!",
+                                      _                             => "Okay"
                                   };
 
             ImGui.PushFont(Fonts.FontLarge);

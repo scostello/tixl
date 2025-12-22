@@ -27,6 +27,26 @@ namespace T3.Editor.Gui.Graph.Dialogs;
 internal static partial class TourDataMarkdownExport
 {
     #region writing markdown
+    
+    internal static void WriteSymbolTourMarkdown(SymbolUi symbolUi, StringBuilder? sb = null)
+    {
+        sb ??= new StringBuilder();
+        
+        sb.Append("# ");
+        sb.Append(string.IsNullOrEmpty(symbolUi.Description) 
+                      ? symbolUi.Symbol.Name 
+                      : symbolUi.Description);
+        
+        sb.Append("  &");
+        sb.AppendLine(symbolUi.Symbol.Id.ShortenGuid());
+        sb.AppendLine();
+        
+        foreach (var tp in symbolUi.TourPoints)
+        {
+            tp.ToMarkdown(sb, symbolUi);
+        }
+    }    
+    
     public static void ToMarkdown(this TourPoint tourPoint, StringBuilder sb, SymbolUi symbolUi)
     {
         // Type with reference to child and input
@@ -37,7 +57,7 @@ internal static partial class TourDataMarkdownExport
             sb.Append(childName);
             sb.Append(") ");
         }
-
+        
         // Write id
         sb.Append(" &");
         sb.Append(tourPoint.Id.ShortenGuid());
@@ -79,7 +99,7 @@ internal static partial class TourDataMarkdownExport
     }
     #endregion
 
-    #region writing from mark down
+    #region pasting from mark down
     /// <summary>
     /// Parses mark down description for tour data matching symbols and tour points.
     /// </summary>
@@ -165,6 +185,9 @@ internal static partial class TourDataMarkdownExport
     private static void ApplyTourDataToSymbolUi(TourWithId tour, SymbolUi targetSymbolUi)
     {
         RealizeTourIds(tour, targetSymbolUi);
+        if (!string.IsNullOrEmpty(tour.Title))
+            targetSymbolUi.Description = tour.Title;
+        
         targetSymbolUi.TourPoints.Clear();
         targetSymbolUi.TourPoints.AddRange(tour.TourPoints);
         targetSymbolUi.FlagAsModified();
@@ -303,14 +326,19 @@ internal static partial class TourDataMarkdownExport
     private static void RealizeIdsTourPointIds(TourPoint tourPoint, SymbolUi symbolUi)
     {
         // Copy original ids if possible
+        var foundId = false;
         foreach (var orgTourPoint in symbolUi.TourPoints)
         {
             if (tourPoint.ShortId != orgTourPoint.Id.ShortenGuid())
                 continue;
 
             tourPoint.Id = orgTourPoint.Id;
+            foundId = true;
             break;
         }
+        
+        if(!foundId)
+            tourPoint.Id = Guid.NewGuid();
 
         // e.g.  Info(Symbol:1)
         var symbolName = string.Empty;

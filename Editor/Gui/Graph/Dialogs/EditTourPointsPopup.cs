@@ -24,27 +24,7 @@ internal static class EditTourPointsPopup
     {
         _isOpen = true;
     }
-
-    private static void WriteSymbolMarkdown(SymbolUi symbolUi, StringBuilder? sb = null)
-    {
-        sb ??= new StringBuilder();
-        
-        sb.Append("# ");
-        sb.Append(string.IsNullOrEmpty(symbolUi.Description) 
-                          ? symbolUi.Symbol.Name 
-                          : symbolUi.Description);
-
-        sb.Append("  &");
-        sb.AppendLine(symbolUi.Symbol.Id.ShortenGuid());
-
-        sb.AppendLine();
-        
-        foreach (var tp in symbolUi.TourPoints)
-        {
-            tp.ToMarkdown(sb, symbolUi);
-        }
-    }
-
+    
     private static string GetSelectionMarkdown()
     {
         if (_compositionUi == null)
@@ -55,7 +35,7 @@ internal static class EditTourPointsPopup
         var hasCurrentCompositionTour = _compositionUi.TourPoints.Count > 0;
         if (hasCurrentCompositionTour)
         {
-            WriteSymbolMarkdown(_compositionUi, sb);
+            TourDataMarkdownExport.WriteSymbolTourMarkdown(_compositionUi, sb);
         }
         else
         {
@@ -64,7 +44,7 @@ internal static class EditTourPointsPopup
                 if (!_compositionUi.ChildUis.TryGetValue(id, out var childUi))
                     continue;
                 
-                WriteSymbolMarkdown(childUi.SymbolChild.Symbol.GetSymbolUi(), sb);
+                TourDataMarkdownExport.WriteSymbolTourMarkdown(childUi.SymbolChild.Symbol.GetSymbolUi(), sb);
                 sb.AppendLine();
             }
         } 
@@ -107,7 +87,7 @@ internal static class EditTourPointsPopup
                 }
                 
                 ImGui.SameLine();
-                if (ImGui.Button("Import from Clipboard"))
+                if (ImGui.Button("Paste from Clipboard"))
                 {
                     TourDataMarkdownExport.TryPasteTourData(_compositionUi, projectView);
                 }
@@ -268,17 +248,19 @@ internal static class EditTourPointsPopup
                     _completedDragging = true;
                 }
 
+                // TourPoint type
                 ImGui.SameLine(0, padding);
 
                 ImGui.SetNextItemWidth(120);
                 modified |= FormInputs.DrawEnumDropdown(ref tourPoint.Style, "style");
 
-                ImGui.SameLine(0, padding);
-                ImGui.TextUnformatted("on");
-                ImGui.SameLine(0, padding);
 
+                // Highlight child
                 if (_compositionUi.ChildUis.TryGetValue(tourPoint.ChildId, out var childUi))
                 {
+                    ImGui.SameLine(0, padding);
+                    ImGui.TextUnformatted("on");
+                    ImGui.SameLine(0, padding);
                     if (ImGui.Button(childUi.SymbolChild.ReadableName))
                     {
                         var comp = ProjectView.Focused!.CompositionInstance;
@@ -297,11 +279,21 @@ internal static class EditTourPointsPopup
                 {
                     CustomComponents.TooltipForLastItem("" + tourPoint.ChildId);
                 }
-                
-                if (CanAdd && tourPoint.ChildId != _firstSelectedChildId)
+
+                if (!CanAdd && tourPoint.ChildId != _firstSelectedChildId)
                 {
                     ImGui.SameLine();
-                    if (CustomComponents.IconButton(Icon.Link, Vector2.Zero))
+                    if (CustomComponents.IconButton(Icon.Unpin, Vector2.Zero))
+                    {
+                        tourPoint.ChildId = Guid.Empty;
+                        tourPoint.InputId = Guid.Empty;
+                        modified = true;
+                    }
+                }
+                else if (CanAdd && tourPoint.ChildId != _firstSelectedChildId)
+                {
+                    ImGui.SameLine();
+                    if (CustomComponents.IconButton(Icon.PinOutline, Vector2.Zero))
                     {
                         tourPoint.ChildId = _firstSelectedChildId;
                         tourPoint.InputId = Guid.Empty;
@@ -348,13 +340,11 @@ internal static class EditTourPointsPopup
                     ImGui.PopStyleColor(2);
                     ImGui.PopStyleVar();
                 }
-                
-
-
-                var x = ImGui.GetContentRegionAvail().X - ImGui.GetFrameHeight();
-                ImGui.SameLine(x);
             }
             ImGui.PopFont();
+            
+            var x = ImGui.GetContentRegionAvail().X - ImGui.GetFrameHeight();
+            ImGui.SameLine(x);
 
             if (CustomComponents.TransparentIconButton(Icon.Trash, Vector2.Zero, CustomComponents.ButtonStates.Dimmed))
             {
