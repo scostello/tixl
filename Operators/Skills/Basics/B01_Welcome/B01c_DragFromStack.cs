@@ -1,4 +1,4 @@
-namespace Skills.Basics_B01_Welcome;
+namespace Skills.Basics.B01_Welcome;
 
 [Guid("468cafa2-d5ef-46f3-b0b7-626cdb0322cf")]
 internal sealed class B01c_DragFromStack : Instance<B01c_DragFromStack>

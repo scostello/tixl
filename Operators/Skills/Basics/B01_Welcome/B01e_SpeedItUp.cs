@@ -1,4 +1,4 @@
-namespace Skills.Basics_B01_Welcome;
+namespace Skills.Basics.B01_Welcome;
 
 [Guid("4f9eb54f-1b81-4a6b-a842-f80c423e5843")]
 internal sealed class B01e_SpeedItUp : Instance<B01e_SpeedItUp>

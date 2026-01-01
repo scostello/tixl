@@ -1,4 +1,4 @@
-namespace Skills.Basics_B01_Welcome;
+namespace Skills.Basics.B01_Welcome;
 
 [Guid("bd3f2fa7-48f7-4ca3-8c32-92fe0d9e3fff")]
 internal sealed class B01b_RearrangeStacks : Instance<B01b_RearrangeStacks>

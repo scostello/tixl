@@ -1,4 +1,4 @@
-namespace Skills.Basics_B01_Welcome;
+namespace Skills.Basics.B01_Welcome;
 
 [Guid("c0065a1d-091a-4fc4-ad36-4430b90d29d4")]
 internal sealed class B01a_Connection1 : Instance<B01a_Connection1>

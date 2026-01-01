@@ -51,10 +51,18 @@ internal static partial class TourDataMarkdownExport
     {
         // Type with reference to child and input
         sb.Append($"## {tourPoint.Style}");
-        if (tourPoint.ChildId != Guid.Empty && TryGetChildNameIndex(symbolUi, tourPoint.ChildId, out var childName))
+        if (tourPoint.ChildId != Guid.Empty 
+            && TryGetChildNameIndex(symbolUi, tourPoint.ChildId, out var childName) )
         {
+            TryGetInputName(symbolUi, tourPoint, out var inputName);
+            
             sb.Append("(");
             sb.Append(childName);
+            if (!string.IsNullOrEmpty(inputName))
+            {
+                sb.Append('.');
+                sb.Append(inputName);
+            }
             sb.Append(") ");
         }
         
@@ -66,7 +74,7 @@ internal static partial class TourDataMarkdownExport
         sb.AppendLine();
     }
 
-    private static bool TryGetChildNameIndex(SymbolUi symbolUi, Guid id, [NotNullWhen(true)] out string name)
+    private static bool TryGetChildNameIndex(SymbolUi symbolUi, Guid id, out string name)
     {
         name = "FAIL?";
 
@@ -91,12 +99,33 @@ internal static partial class TourDataMarkdownExport
         if (index == 0)
         {
             name = child.SymbolChild.Symbol.Name;
-            return true;
         }
-
-        name = $"{child.SymbolChild.Symbol.Name}:{index + 1}";
+        else
+        {
+            name = $"{child.SymbolChild.Symbol.Name}:{index + 1}";
+        }
+        
         return true;
     }
+
+    private static bool TryGetInputName(SymbolUi symbolUi, TourPoint tourPoint, out string inputName)
+    {
+        inputName = string.Empty;
+
+        if (tourPoint.InputId == Guid.Empty || tourPoint.ChildId == Guid.Empty)
+            return false;
+
+        if (!symbolUi.Symbol.Children.TryGetValue(tourPoint.ChildId, out var child))
+            return false;
+
+        var input = child.Symbol.InputDefinitions.FirstOrDefault(i => i.Id == tourPoint.InputId);
+        if (input == null)
+            return false;
+
+        inputName = input.Name;
+        return true;
+    }
+
     #endregion
 
     #region pasting from mark down
