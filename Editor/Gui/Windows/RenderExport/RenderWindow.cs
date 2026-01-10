@@ -75,7 +75,6 @@ internal sealed class RenderWindow : Window
         ImGui.PopStyleVar();
         ImGui.PopStyleColor();
 
-        FormInputs.AddVerticalSpace(10);
         DrawRenderingControls();
         DrawOverwriteDialog();
 
@@ -235,8 +234,8 @@ internal sealed class RenderWindow : Window
     private void DrawRenderSummary()
     {
         var size = RenderProcess.MainOutputOriginalSize;
-        var scaledWidth = (int)(size.Width * RenderSettings.ResolutionFactor);
-        var scaledHeight = (int)(size.Height * RenderSettings.ResolutionFactor);
+        var scaledWidth = ((int)(size.Width * RenderSettings.ResolutionFactor) / 2 * 2).Clamp(2, 16384);
+        var scaledHeight = ((int)(size.Height * RenderSettings.ResolutionFactor) / 2 * 2).Clamp(2, 16384);
 
         var startSec = RenderTiming.ReferenceTimeToSeconds(RenderSettings.StartInBars, RenderSettings.Reference, RenderSettings.Fps);
         var endSec = RenderTiming.ReferenceTimeToSeconds(RenderSettings.EndInBars, RenderSettings.Reference, RenderSettings.Fps);
@@ -256,7 +255,7 @@ internal sealed class RenderWindow : Window
         ImGui.Unindent(5);
         ImGui.Indent(5);
         ImGui.PushStyleColor(ImGuiCol.Text, UiColors.TextMuted.Rgba);
-        ImGui.TextUnformatted($"{format} • {scaledWidth}×{scaledHeight} @ {RenderSettings.Fps:0}fps");
+        ImGui.TextUnformatted($"{format} - {scaledWidth}×{scaledHeight} @ {RenderSettings.Fps:0}fps");
         ImGui.TextUnformatted($"{duration / 60:0}:{duration % 60:00.0}s ({RenderSettings.FrameCount} frames)");
         
         ImGui.PushFont(Fonts.FontSmall);
@@ -309,7 +308,7 @@ internal sealed class RenderWindow : Window
             var progress = (float)RenderProcess.Progress;
             var elapsed = Playback.RunTimeInSecs - RenderProcess.ExportStartedTimeLocal;
 
-            string timeRemainingStr = "Calculating...";
+            var timeRemainingStr = "Calculating...";
             if (progress > 0.01)
             {
                 var estimatedTotal = elapsed / progress;
@@ -335,33 +334,61 @@ internal sealed class RenderWindow : Window
 
     private static void DrawOverwriteDialog()
     {
+        // Handle deferred render start (from previous frame's Overwrite button click)
+        // This is to have less freeze when clicking the "Overwrite" button.
+        if (_pendingRenderStart)
+        {
+            _pendingRenderStart = false;
+            RenderProcess.TryStart(RenderSettings);
+        }
+        
         if (_showOverwriteModal)
         {
+            _dummyOpen = true;
             ImGui.OpenPopup("Overwrite?");
             _showOverwriteModal = false;
         }
 
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(20, 20));
+        
         if (ImGui.BeginPopupModal("Overwrite?", ref _dummyOpen, ImGuiWindowFlags.AlwaysAutoResize))
         {
+            ImGui.BeginGroup();
             var targetPath = GetCachedTargetFilePath(RenderSettings.RenderMode);
-            ImGui.TextUnformatted($"The file '{Path.GetFileName(targetPath)}' already exists.\nDo you want to overwrite it?");
-            FormInputs.AddVerticalSpace(10);
+            
+            ImGui.TextUnformatted("The file already exists:");
+            
+            ImGui.PushFont(Fonts.FontBold);
+            ImGui.TextUnformatted(Path.GetFileName(targetPath));
+            ImGui.PopFont();
+            
+            ImGui.Dummy(new Vector2(0,10));
+            ImGui.TextUnformatted("Do you want to overwrite it?");
+            FormInputs.AddVerticalSpace(20);
 
-            if (ImGui.Button("Overwrite", new Vector2(100, 0)))
+            if (ImGui.Button("Overwrite", new Vector2(120, 0)))
             {
-                RenderProcess.TryStart(RenderSettings);
+                // Defer render start to next frame so popup closes immediately
+                _pendingRenderStart = true;
                 ImGui.CloseCurrentPopup();
             }
             ImGui.SameLine();
-            if (ImGui.Button("Cancel", new Vector2(100, 0)))
+            if (ImGui.Button("Cancel", new Vector2(120, 0)))
             {
                 ImGui.CloseCurrentPopup();
             }
+            
+            // Force minimum width
+            ImGui.Dummy(new Vector2(350, 1));
+            
+            ImGui.EndGroup();
             ImGui.EndPopup();
         }
+        ImGui.PopStyleVar();
     }
 
     private static bool _showOverwriteModal;
+    private static bool _pendingRenderStart;
     private static bool _dummyOpen = true;
 
 
