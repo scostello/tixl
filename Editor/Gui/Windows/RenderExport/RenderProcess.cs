@@ -210,7 +210,7 @@ internal static class RenderProcess
         // set playback to the first frame
         RenderTiming.SetPlaybackTimeForFrame(ref _activeSession.Settings, _activeSession.FrameIndex, _activeSession.FrameCount, ref _activeSession.Runtime);
         IsExporting = true;
-        LastHelpString = "Rendering…";
+        LastHelpString = "Rendering...";
     }
 
 
