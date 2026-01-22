@@ -12,6 +12,7 @@ using T3.Editor.Gui.Styling;
 using T3.Editor.Gui.UiHelpers;
 using T3.Editor.Gui.Windows.AssetLib;
 using T3.Editor.UiModel;
+using T3.Editor.UiModel.Helpers;
 using T3.Editor.UiModel.InputsAndTypes;
 using T3.Editor.UiModel.Modification;
 using T3.Editor.UiModel.ProjectHandling;
@@ -237,7 +238,7 @@ internal static class DropHandling
             return false;
         }
 
-        if (!AssetLibrary.TryGetFileInputFromInstance(newInstance, out var stringInput, out _))
+        if (!SymbolAnalysis.TryGetFileInputFromInstance(newInstance, out var stringInput, out _))
         {
             Log.Warning("Failed to get file path parameter from op");
             return false;

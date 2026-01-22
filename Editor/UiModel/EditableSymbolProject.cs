@@ -20,7 +20,8 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
     /// <summary>
     /// Create a new <see cref="EditableSymbolProject"/> using the given <see cref="CsProjectFile"/>.
     /// </summary>
-    public EditableSymbolProject(CsProjectFile csProjectFile) : base(assembly: AssemblyInformation.CreateUninitialized(), directory: csProjectFile.Directory, false)
+    public EditableSymbolProject(CsProjectFile csProjectFile) : 
+        base(assembly: AssemblyInformation.CreateUninitialized(), directory: csProjectFile.Directory, false)
     {
         AssemblyInformation.Initialize(csProjectFile.GetBuildTargetDirectory(), false);
         CsProjectFile = csProjectFile;

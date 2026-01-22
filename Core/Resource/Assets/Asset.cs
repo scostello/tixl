@@ -1,0 +1,39 @@
+﻿#nullable enable
+
+using System;
+using System.IO;
+
+namespace T3.Core.Resource.Assets;
+
+/// <summary>
+/// Defines a potential file resource in a SymbolProject 
+/// </summary>
+public sealed class Asset
+{
+    public required string Address;
+    public required Guid PackageId;
+    public FileInfo? FileInfo;
+    public AssetType AssetType = AssetType.Unknown;
+
+    public static readonly Asset Unknown = new Asset
+                                      {
+                                          Address = string.Empty,
+                                          PackageId = default
+                                      };
+
+}
+
+
+/// <summary>
+/// A reference of a symbol child or input to an Package
+/// </summary>
+/// <remarks>
+/// SymbolPackage will create a list of it's usages on init.
+/// </remarks>
+public sealed class AssetReference
+{
+    public required Asset Asset;
+    public Guid SymbolId;
+    public Guid SymbolChildId;
+    public Guid InputId;
+}

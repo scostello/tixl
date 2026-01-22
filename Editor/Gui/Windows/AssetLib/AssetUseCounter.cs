@@ -10,26 +10,26 @@ public static class AssetUseCounter {
 
     public static void IncrementUseCount(AssetType assetType)
     {
-        if (Counts.Length != AssetType.AvailableTypes.Count)
+        if (_counts.Length != AssetType.AvailableTypes.Count)
         {
-            Counts = new int[AssetType.AvailableTypes.Count];
+            _counts = new int[AssetType.AvailableTypes.Count];
         }
 
-        Counts[assetType.Index]++;
+        _counts[assetType.Index]++;
     }
 
     internal static int GetUseCount(AssetType assetType)
     {
-        if (assetType.Index >= Counts.Length)
+        if (assetType.Index >= _counts.Length)
             return 0;
         
-        return Counts[assetType.Index];
+        return _counts[assetType.Index];
     } 
     
     internal static void ClearMatchingFileCounts()
     {
-        Array.Clear(Counts, 0, Counts.Length);
+        Array.Clear(_counts, 0, _counts.Length);
     }
-    
-    public static int[] Counts;
+
+    private static int[] _counts = [];
 }

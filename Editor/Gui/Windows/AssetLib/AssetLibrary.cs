@@ -14,6 +14,7 @@ using T3.Core.Utils;
 using T3.Editor.Gui.InputUi.SimpleInputUis;
 using T3.Editor.Gui.UiHelpers;
 using T3.Editor.UiModel;
+using T3.Editor.UiModel.Helpers;
 using T3.Editor.UiModel.ProjectHandling;
 using T3.Editor.UiModel.Selection;
 
@@ -61,7 +62,7 @@ internal sealed partial class AssetLibrary : Window
             return;
 
         if (_state.LastFileWatcherState == ResourceFileWatcher.FileStateChangeCounter
-            && !HasObjectChanged(_state.Composition, ref _lastCompositionObjId)
+            && !Core.Utils.Utilities.HasObjectChanged(_state.Composition, ref _lastCompositionObjId)
             && !_state.FilteringNeedsUpdate)
             return;
 
@@ -143,9 +144,9 @@ internal sealed partial class AssetLibrary : Window
         _state.FilteringNeedsUpdate = false;
     }
 
-    // TODO: this should replaced with assetAddress later
     private static void ParsePath(string uri, out string package, out List<string> folders)
     {
+        // TODO: this should replaced with assetAddress later
         var colon = uri.IndexOf(':');
         if (colon <= 1)
         {
@@ -182,7 +183,7 @@ internal sealed partial class AssetLibrary : Window
         // Check if active instance has asset reference...
         var instance = _state.ActiveInstance;
         
-        if (TryGetFileInputFromInstance(instance, out _state.ActivePathInput, out var stringInputUi))
+        if (SymbolAnalysis.TryGetFileInputFromInstance(instance, out _state.ActivePathInput, out var stringInputUi))
         {
             var filePath = _state.ActivePathInput.GetCurrentValue();
             ResourceManager.TryResolveUri(filePath, instance, out _state.ActiveAbsolutePath, out _);
@@ -209,66 +210,6 @@ internal sealed partial class AssetLibrary : Window
         {
             _state.ActiveAbsolutePath = null;
         }
-    }
-
-    // TODO: move to separate op utils helper class
-    public static bool TryGetFileInputFromInstance(Instance instance,
-                                                   [NotNullWhen(true)] out InputSlot<string>? stringInput,
-                                                   [NotNullWhen(true)] out StringInputUi? stringInputUi)
-    {
-        stringInput = null;
-        stringInputUi = null;
-
-        var symbolUi = instance.GetSymbolUi();
-        foreach (var input in instance.Inputs)
-        {
-            if (input is not InputSlot<string> tmpStringInput)
-                continue;
-
-            stringInput = tmpStringInput;
-
-            var inputUi = symbolUi.InputUis[input.Id];
-            if (inputUi is not StringInputUi { Usage: StringInputUi.UsageType.FilePath } tmpStringInputUi)
-                continue;
-
-            stringInputUi = tmpStringInputUi;
-
-            // Found a file path input in selected op
-            //_state.ActivePathInput = tmpStringInput;
-
-            // var sb = new StringBuilder();
-            // foreach (var id in AssetLibState.CompatibleExtensionIds)
-            // {
-            //     if (FileExtensionRegistry.TryGetExtensionForId(id, out var ext))
-            //     {
-            //         sb.Append(ext);
-            //         sb.Append(", ");
-            //     }
-            //     else
-            //     {
-            //         sb.Append($"#{id}");
-            //     }
-            // }
-            //
-            // Log.Debug("matching extensions " + sb);
-
-            return true;
-        }
-
-        return false;
-    }
-
-    /// <summary>
-    /// Useful for checking if a reference has changed without keeping an GC reference. 
-    /// </summary>
-    private static bool HasObjectChanged(object? obj, ref int? lastObjectId)
-    {
-        int? id = obj is null ? null : RuntimeHelpers.GetHashCode(obj);
-        if (id == lastObjectId)
-            return false;
-
-        lastObjectId = id;
-        return true;
     }
 
     internal static bool GetAssetFromAliasPath(string aliasPath, [NotNullWhen(true)] out AssetItem? asset)

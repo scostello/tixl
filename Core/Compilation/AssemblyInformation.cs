@@ -24,6 +24,9 @@ public sealed partial class AssemblyInformation
     public string Name { get; private set; }
     public string Directory => _directory!;
 
+    // The mocked ID based on the Name
+    public Guid Id => GenerateGuidFromName(Name);
+    
     public bool IsLoaded => _loadContext != null;
 
     private bool _loadedTypes;
@@ -391,5 +394,19 @@ public sealed partial class AssemblyInformation
                 Log.Error($"Failed to invoke Loaded event for {Name}: {ex}");
             }
         }
+    }
+    
+    /// <summary>
+    /// This is only temporary. Eventually the ID should be generated and stored in csproj file
+    /// </summary>
+    private static Guid GenerateGuidFromName(string name)
+    {
+        if (string.IsNullOrEmpty(name))
+            return Guid.Empty;
+
+        // Use MD5 to create a deterministic 16-byte hash from the name
+        using var md5 = System.Security.Cryptography.MD5.Create();
+        byte[] hash = md5.ComputeHash(System.Text.Encoding.UTF8.GetBytes(name));
+        return new Guid(hash);
     }
 }

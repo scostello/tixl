@@ -3,52 +3,56 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using T3.Core.DataTypes.Vector;
 
-namespace T3.Core.Resource.Assets
+namespace T3.Core.Resource.Assets;
+
+public sealed class AssetType
 {
-    public sealed class AssetType
+    public readonly string Name;
+    public readonly List<int> ExtensionIds;
+    public required List<Guid> PrimaryOperators;
+    public required Color Color;
+    public required uint IconId;
+    public int Index;
+    
+    public AssetType(string name, List<int> extensionIds)
     {
-        public readonly string Name;
-        public readonly List<int> ExtensionIds;
-        public required List<Guid> PrimaryOperators;
-        public required Color Color;
-        public required uint IconId;
-        public int Index;
-        
-
-        public AssetType(string name, List<int> extensionIds)
+        Name = name;
+        ExtensionIds = extensionIds;
+        foreach (var id in extensionIds)
         {
-            Name = name;
-            ExtensionIds = extensionIds;
-            foreach (var id in extensionIds)
-            {
-                _assetTypeForExtensionId[id] = this;
-            }
+            _assetTypeForExtensionId[id] = this;
         }
+    }
+    
 
-        public override string ToString()
-        {
-            return Name;
-        }
+    public override string ToString()
+    {
+        return Name;
+    }
 
-        public static bool TryGetFromId(int extensionId, [NotNullWhen(true)] out AssetType? type)
-        {
-            return _assetTypeForExtensionId.TryGetValue(extensionId, out type);
-        }
+    public static bool TryGetFromId(int extensionId, [NotNullWhen(true)] out AssetType? type)
+    {
+        return _assetTypeForExtensionId.TryGetValue(extensionId, out type);
+    }
 
+    
+    /// <summary>
+    /// This is mostly UI specific and should be initialized by Editor on application startup.
+    /// </summary>
+    public static List<AssetType> AvailableTypes { get; private set; } = [];
+    private static readonly Dictionary<int, AssetType> _assetTypeForExtensionId = [];
+    
+    public static readonly AssetType Unknown = new("unknown", [])
+                                                   {
+                                                       PrimaryOperators = null,
+                                                       Color = default,
+                                                       IconId = 0
+                                                   };
 
-
-
-        /// <summary>
-        /// This is mostly UI specific and should be initialized by Editor on application startup.
-        /// </summary>
-        public static List<AssetType> AvailableTypes { get; private set; } = [];
-        private static readonly Dictionary<int, AssetType> _assetTypeForExtensionId = [];
-
-        public static void RegisterType(AssetType newAssetType)
-        {
-            var index = AvailableTypes.Count;
-            AvailableTypes.Add(newAssetType);
-            newAssetType.Index = index;
-        }
+    public static void RegisterType(AssetType newAssetType)
+    {
+        var index = AvailableTypes.Count;
+        AvailableTypes.Add(newAssetType);
+        newAssetType.Index = index;
     }
 }
