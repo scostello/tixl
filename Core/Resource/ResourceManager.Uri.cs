@@ -5,6 +5,7 @@ using System.IO;
 using T3.Core.Logging;
 using T3.Core.Model;
 using T3.Core.Operator;
+using T3.Core.Resource.Assets;
 using T3.Core.Utils;
 
 namespace T3.Core.Resource;
@@ -20,6 +21,12 @@ public static partial class ResourceManager
                                      out IResourcePackage resourceContainer,
                                      bool isFolder = false)
     {
+
+        if (AssetRegistry.TryGetAsset(uri, out var asset))
+        {
+            Log.Debug($"Found Asset: {asset}");
+        }
+        
         resourceContainer = null;
         absolutePath = string.Empty;
         

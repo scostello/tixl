@@ -1,7 +1,10 @@
 ﻿#nullable enable
+using System;
+using System.Collections.Generic;
 using System.IO;
+using T3.Core.Logging;
 
-namespace T3.Editor.Gui.Windows.AssetLib;
+namespace T3.Core.Resource.Assets;
 
 
 /// <summary>
@@ -12,13 +15,13 @@ namespace T3.Editor.Gui.Windows.AssetLib;
 /// Maybe similar to a dynamic enum type. The unique Ids are generated while counting the
 /// keys in a dictionary.
 /// </remarks>
-internal static class FileExtensionRegistry
+public static class FileExtensionRegistry
 {
     public static int GetUniqueId(string ext) => _map.TryGetValue(ext, out var id) 
                                                ? id 
                                                : _map[ext]=_next++;
 
-    internal static bool TryGetExtensionIdForFilePath(string filepath, out int id)
+    public static bool TryGetExtensionIdForFilePath(string filepath, out int id)
     {
         id = -1;
 

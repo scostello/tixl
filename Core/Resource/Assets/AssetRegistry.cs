@@ -34,12 +34,15 @@ internal static class AssetRegistry
             var relativePath = Path.GetRelativePath(root, filePath).Replace("\\", "/");
             var uri = $"{packageAlias}:{relativePath}"; // Mandatory format
 
+            var fileInfo = new FileInfo(filePath);
+            AssetType.TryGetForFilePath(fileInfo.Name, out var assetType);
+            
             var asset = new Asset
                             {
                                 Address = uri,
                                 PackageId = packageId,
-                                FileInfo = new FileInfo(filePath),
-                                AssetType = AssetType.Unknown // To be determined by extension
+                                FileInfo = fileInfo,
+                                AssetType = assetType // To be determined by extension
                             };
 
             _assetsByAddress[uri] = asset;

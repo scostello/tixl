@@ -11,16 +11,6 @@ namespace T3.Editor.Gui.Windows.AssetLib;
 /// </summary>
 internal static class AssetHandling
 {
-    internal static bool TryGetAssetTypeFromFilePath(string filepath, [NotNullWhen(true)] out AssetType? assetType)
-    {
-        assetType = null;
-
-        if (!FileExtensionRegistry.TryGetExtensionIdForFilePath(filepath, out var extensionId))
-            return false;
-
-        return AssetType.TryGetFromId(extensionId, out assetType);
-    }
-
     public static void InitAssetTypes()
     {
         AssetType.RegisterType(new AssetType("Obj", [

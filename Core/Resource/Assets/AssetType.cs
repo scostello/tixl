@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using T3.Core.DataTypes.Vector;
@@ -24,13 +25,30 @@ public sealed class AssetType
         }
     }
     
-
     public override string ToString()
     {
         return Name;
     }
 
-    public static bool TryGetFromId(int extensionId, [NotNullWhen(true)] out AssetType? type)
+    public static bool TryGetForFilePath(string filepath, out AssetType assetType)
+    {
+
+        if (!FileExtensionRegistry.TryGetExtensionIdForFilePath(filepath, out var extensionId))
+        {
+            assetType = Unknown;
+            return false;
+        }
+
+        if (TryGetFromExtensionId(extensionId, out assetType!))
+            return true;
+
+        assetType = Unknown;
+        return false;
+    }
+
+    
+    
+    public static bool TryGetFromExtensionId(int extensionId, [NotNullWhen(true)] out AssetType? type)
     {
         return _assetTypeForExtensionId.TryGetValue(extensionId, out type);
     }

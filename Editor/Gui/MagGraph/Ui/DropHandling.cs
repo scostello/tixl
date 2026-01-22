@@ -180,7 +180,7 @@ internal static class DropHandling
                     // return true;
                 }
                 
-                if (!AssetHandling.TryGetAssetTypeFromFilePath(destFilepath, out var assetType))
+                if (!AssetType.TryGetForFilePath(destFilepath, out var assetType))
                 {
                     Log.Warning("Can't find this asset type.");
                     continue;

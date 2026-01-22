@@ -107,7 +107,7 @@ internal sealed partial class AssetLibrary : Window
                 var fileInfo = new FileInfo(absolutePath);
                 var fileInfoExtension = fileInfo.Extension.Length < 1 ? string.Empty : fileInfo.Extension[1..];
                 var fileExtensionId = FileExtensionRegistry.GetUniqueId(fileInfoExtension);
-                if (!AssetType.TryGetFromId(fileExtensionId, out var assetType))
+                if (!AssetType.TryGetFromExtensionId(fileExtensionId, out var assetType))
                 {
                     Log.Warning($"Can't find file type for: {fileInfoExtension}");
                 }
