@@ -7,7 +7,7 @@
     },
     {
       "Id": "271eb784-d6e4-4a24-a078-c5ecfd2ef19c"/*ImageFolder*/,
-      "DefaultValue": "/Examples/user/wake/proj-vj-deadline2021/image/mix-tapes-alpha/"
+      "DefaultValue": "Examples:images/sequences/agingFacesMale"
     },
     {
       "Id": "2c0655fe-60d6-4a75-a5d5-881f35b148c9"/*TriggerUpdate*/,

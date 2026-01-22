@@ -377,7 +377,7 @@
         {
           "Id": "ca8724d8-a362-4af4-bdf8-a80a1b0ef72e"/*FolderWithImages*/,
           "Type": "System.String",
-          "Value": "Resources\\user\\still\\proj-worksforeverybody\\images\\sketches"
+          "Value": "Examples:user/still/proj-worksforeverybody/images/sketches/"
         }
       ],
       "Outputs": []
@@ -1990,7 +1990,7 @@
         {
           "Id": "ca8724d8-a362-4af4-bdf8-a80a1b0ef72e"/*FolderWithImages*/,
           "Type": "System.String",
-          "Value": "Resources\\user\\still\\proj-worksforeverybody\\images\\sketches"
+          "Value": "Examples:user/still/proj-worksforeverybody/images/sketches/"
         }
       ],
       "Outputs": []
