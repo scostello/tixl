@@ -43,24 +43,23 @@ internal static class DropHandling
 
     private static void HandleDropFileAsset(GraphUiContext context)
     {
-        DragAndDropHandling.TryHandleItemDrop(DragAndDropHandling.DragTypes.FileAsset, out var aliasPath, out var assetResult);
+        DragAndDropHandling.TryHandleItemDrop(DragAndDropHandling.DragTypes.FileAsset, out var address, out var assetResult);
 
-        if ((assetResult != DragAndDropHandling.DragInteractionResult.Hovering
-             && assetResult != DragAndDropHandling.DragInteractionResult.Dropped)
-            || aliasPath == null) return;
+        if (assetResult != DragAndDropHandling.DragInteractionResult.Hovering
+            && assetResult != DragAndDropHandling.DragInteractionResult.Dropped
+            || address == null) return;
 
-        if (!AssetLibrary.GetAssetFromAliasPath(aliasPath, out var asset))
+        if (!AssetRegistry.TryGetAsset(address, out var asset))
         {
-            Log.Warning($"Can't get asset for {aliasPath}");
+            Log.Warning($"Can't get asset for {address}");
             return;
         }
 
-        var assetType = asset.AssetType;
-        if (assetType == null)
-        {
-            Log.Warning($"{aliasPath} has no asset type");
-            return;
-        }
+        // if (assetType == null)
+        // {
+        //     Log.Warning($"{address} has no asset type");
+        //     return;
+        // }
 
         if (assetResult == DragAndDropHandling.DragInteractionResult.Hovering)
         {
@@ -68,11 +67,9 @@ internal static class DropHandling
         }
         else
         {
-            CreateAssetOperator(context, assetType, aliasPath, Vector2.Zero);
+            CreateAssetOperator(context, asset.AssetType, address, Vector2.Zero);
         }
     }
-
-
 
     private static bool HandleDropSymbol(GraphUiContext context)
     {
@@ -122,7 +119,7 @@ internal static class DropHandling
             var fileCount = filePaths.Length;
 
             var dropOffset = Vector2.Zero;
-            
+
             foreach (var filepath in filePaths)
             {
                 if (!Path.Exists(filepath))
@@ -148,8 +145,6 @@ internal static class DropHandling
                     }
 
                     Log.Debug($"Copied {fileName} to {packageResourcesFolder}");
-
-
                 }
                 else
                 {
@@ -179,8 +174,8 @@ internal static class DropHandling
                     // Log.Debug("! Would create op " + asset);
                     // return true;
                 }
-                
-                if (!AssetType.TryGetForFilePath(destFilepath, out var assetType))
+
+                if (!AssetType.TryGetForFilePath(destFilepath, out var assetType, out _))
                 {
                     Log.Warning("Can't find this asset type.");
                     continue;
@@ -194,17 +189,18 @@ internal static class DropHandling
 
                 if (!CreateAssetOperator(context, assetType, uri, dropOffset))
                     continue;
-                    
-                dropOffset += new Vector2(20, 100);                
+
+                dropOffset += new Vector2(20, 100);
             }
         }
+
         return false;
     }
 
-    private static void DrawDropPreviewItem(AssetItem asset)
+    private static void DrawDropPreviewItem(Asset asset)
     {
-        if (asset.AssetType == null)
-            return;
+        // if (asset.AssetType == null)
+        //     return;
 
         if (asset.AssetType.PrimaryOperators.Count == 0)
             return;
@@ -223,7 +219,6 @@ internal static class DropHandling
         dl.AddRectFilled(pos, pos + MagGraphItem.GridSize, color, 4);
     }
 
-        
     private static bool CreateAssetOperator(GraphUiContext context, AssetType assetType, string aliasPath, Vector2 dropOffset)
     {
         if (assetType.PrimaryOperators.Count == 0)
@@ -232,7 +227,7 @@ internal static class DropHandling
             return false;
         }
 
-        if (!TryCreateSymbolInstanceOnGraph(context, assetType.PrimaryOperators[0], dropOffset,  out var newInstance))
+        if (!TryCreateSymbolInstanceOnGraph(context, assetType.PrimaryOperators[0], dropOffset, out var newInstance))
         {
             Log.Warning("Failed to create operator instance");
             return false;
@@ -251,8 +246,8 @@ internal static class DropHandling
         stringInput.Parent.Parent?.Symbol.InvalidateInputInAllChildInstances(stringInput);
         stringInput.Input.IsDefault = false;
         return true;
-    }    
-    
+    }
+
     private static bool TryCreateSymbolInstanceOnGraph(GraphUiContext context, Guid guid, Vector2 offsetInScreen, [NotNullWhen(true)] out Instance? newInstance)
     {
         newInstance = null;
@@ -276,6 +271,4 @@ internal static class DropHandling
         Log.Warning($"Symbol {guid} not found in registry");
         return false;
     }
-    
-
 }

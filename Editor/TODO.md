@@ -41,22 +41,23 @@
 - [x] Simplify resource uri resolve method
 - [.] Run tests
 - [ ] Check .\Lib\Resources\shaders\points\sim\SimSamplePointAttributes.hlsl
-- [ ] Move obsolete user examples to separate project
+- [ ] Introduce ignores files list
 - [ ] Maybe: Fix paths with pasting symbols from (e.g. from Discord)
 - [ ] Add some kind of cache which projects have been "fixed" 
 - [x] Extra AssetRegistry
 - [x] Move AssetTypes to Core
 - [ ] Use AssetTypes and AssetRegistry to draw FilePicking with filters
-- [ ] Extend Asset with isDirectory
-- [ ] Return temp Assets
+- [x] Extend Asset with isDirectory
+- [ ] Return temp Assets?
 - [ ] Update conform
-- [ ] Add FolderPaths Assets
-- [ ] In AssetLib (only use AssetRegistry)
-- [ ] Collect AssetReferences on package load
-- [ ] Test Recompile / Symbol Reload
+- [x] Add FolderPaths Assets
+- [x] In AssetLib (only use AssetRegistry)
+- [.] Test Recompile / Symbol Reload
 - [ ] Handle File asset Drag and Drop between folders
+- [ ] Collect AssetReferences on package load
 - [ ] List all uses for an Asset
 
+- [ ] Move obsolete user examples to separate project
 
 - [ ] Rename "Resources" -> "Assets"
 

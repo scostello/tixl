@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using ImGuiNET;
 using T3.Core.DataTypes.Vector;
 using T3.Core.Operator.Slots;
+using T3.Core.Resource.Assets;
 using T3.Core.SystemUi;
 using T3.Core.Utils;
 using T3.Editor.Gui.Styling;
@@ -102,7 +103,7 @@ internal sealed partial class AssetLibrary
                                                         }
                                                         else
                                                         {
-                                                            Log.Warning($"Failed to get path for {_folderForMenu.AliasPath}");
+                                                            Log.Warning($"Failed to get path for {_folderForMenu.Address}");
                                                         }
                                                     }
                                                 });
@@ -157,12 +158,12 @@ internal sealed partial class AssetLibrary
         }
     }
 
-    private bool ContainsTargetFile(AssetFolder folder)
+    private static bool ContainsTargetFile(AssetFolder folder)
     {
         var containsTargetFile = _state.ActivePathInput != null
-                                 && !string.IsNullOrEmpty(folder.AbsolutePath)
-                                 && !string.IsNullOrEmpty(_state.ActiveAbsolutePath)
-                                 && _state.ActiveAbsolutePath.StartsWith(folder.AbsolutePath);
+                                 && !string.IsNullOrEmpty(folder.Address)
+                                 && !string.IsNullOrEmpty(_state.ActiveAssetAddress)
+                                 && _state.ActiveAssetAddress.StartsWith(folder.Address);
         return containsTargetFile;
     }
 
@@ -181,13 +182,14 @@ internal sealed partial class AssetLibrary
         }
     }
 
-    private void DrawAssetItem(AssetItem asset)
+    private void DrawAssetItem(Asset asset)
     {
-        var isSelected = asset.AbsolutePath == _state.ActiveAbsolutePath;
+        
+        var isSelected = asset.Address == _state.ActiveAssetAddress;
 
         var fileConsumerOpSelected = _state.CompatibleExtensionIds.Count > 0;
         var fileConsumerOpIsCompatible = fileConsumerOpSelected
-                                         && _state.CompatibleExtensionIds.Contains(asset.FileExtensionId);
+                                         && _state.CompatibleExtensionIds.Contains(asset.ExtensionId);
 
         // Skip not matching asset
         if (fileConsumerOpSelected && !fileConsumerOpIsCompatible)
@@ -208,7 +210,7 @@ internal sealed partial class AssetLibrary
             
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 5);
             if (ButtonWithIcon(string.Empty,
-                               asset.FileInfo.Name,
+                               asset.FileSystemInfo?.Name ?? string.Empty,
                                icon,
                                iconColor.Fade(fade),
                                UiColors.Text.Fade(fade),
@@ -218,7 +220,7 @@ internal sealed partial class AssetLibrary
                 var stringInput = _state.ActivePathInput;
                 if (stringInput != null && !isSelected && fileConsumerOpIsCompatible)
                 {
-                    _state.ActiveAbsolutePath = asset.AbsolutePath;
+                    _state.ActiveAssetAddress = asset.Address;
 
                     ApplyResourcePath(asset, stringInput);
                 }
@@ -240,14 +242,18 @@ internal sealed partial class AssetLibrary
                                                                {
                                                                    if (ImGui.MenuItem("Edit externally"))
                                                                    {
-                                                                       CoreUi.Instance.OpenWithDefaultApplication(asset.FileInfo.FullName);
+                                                                       var absolutePath = asset.FileSystemInfo?.FullName;
+                                                                       if (!string.IsNullOrEmpty(absolutePath))
+                                                                       {
+                                                                            CoreUi.Instance.OpenWithDefaultApplication(absolutePath);
+                                                                       }
                                                                        Log.Debug("Not implemented yet");
                                                                    }
                                                                },
-                                                title: asset.FileInfo.Name,
+                                                title: asset.FileSystemInfo?.Name,
                                                 id: "##symbolTreeSymbolContextMenu");
 
-            DragAndDropHandling.HandleDragSourceForLastItem(DragAndDropHandling.DragTypes.FileAsset, asset.FileAliasPath, "Move or use asset");
+            DragAndDropHandling.HandleDragSourceForLastItem(DragAndDropHandling.DragTypes.FileAsset, asset.Address, "Move or use asset");
 
             if (ImGui.IsItemHovered())
             {
@@ -255,13 +261,14 @@ internal sealed partial class AssetLibrary
 
                 // Tooltip
                 {
+                    var absolutePath = asset.FileSystemInfo?.FullName;
                     ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(4, 4));
                     ImGui.BeginTooltip();
                     ImGui.PushTextWrapPos(ImGui.GetFontSize() * 25.0f);
                     ImGui.TextUnformatted($"""
-                                           Filesize: {asset.FileInfo.Length}
-                                           Path: {asset.FileInfo.Directory}
-                                           Time: {asset.FileInfo.LastWriteTime}
+                                           Filesize: {asset.FileSize}
+                                           Path: {absolutePath}
+                                           Time: {asset.FileSystemInfo?.LastWriteTime}
                                            """);
                     ImGui.PopTextWrapPos();
                     ImGui.PopStyleVar();
@@ -332,7 +339,7 @@ internal sealed partial class AssetLibrary
         return pressed;
     }
 
-    private static void ApplyResourcePath(AssetItem asset, InputSlot<string> inputSlot)
+    private static void ApplyResourcePath(Asset asset, InputSlot<string> inputSlot)
     {
         var instance = inputSlot.Parent;
         var composition = instance.Parent;
@@ -350,7 +357,7 @@ internal sealed partial class AssetLibrary
                                                                   inputSlot.Input.Value);
 
         // warning: we must not use Value because this will use by abstract resource to detect changes
-        inputSlot.TypedInputValue.Value = asset.FileAliasPath;
+        inputSlot.TypedInputValue.Value = asset.Address;
 
         inputSlot.DirtyFlag.ForceInvalidate();
         inputSlot.Parent.Parent?.Symbol.InvalidateInputInAllChildInstances(inputSlot);

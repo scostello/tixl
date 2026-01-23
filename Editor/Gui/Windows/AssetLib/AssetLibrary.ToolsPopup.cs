@@ -23,28 +23,28 @@ internal sealed partial class AssetLibrary
             if (CustomComponents.DrawMenuItem(_openExternallyId, "Open externally",
                                               null,
                                               false,
-                                              !string.IsNullOrEmpty(_state.ActiveAbsolutePath)))
+                                              !string.IsNullOrEmpty(_state.ActiveAssetAddress)))
             {
-                if (!string.IsNullOrEmpty(_state.ActiveAbsolutePath))
-                    CoreUi.Instance.OpenWithDefaultApplication(_state.ActiveAbsolutePath);
+                if (!string.IsNullOrEmpty(_state.ActiveAssetAddress))
+                    CoreUi.Instance.OpenWithDefaultApplication(_state.ActiveAssetAddress);
             }
 
             if (CustomComponents.DrawMenuItem(_revealInExplorerId, "Reveal in Explorer",
                                               null,
                                               false,
-                                              !string.IsNullOrEmpty(_state.ActiveAbsolutePath)))
+                                              !string.IsNullOrEmpty(_state.ActiveAssetAddress)))
             {
-                if (!string.IsNullOrEmpty(_state.ActiveAbsolutePath))
+                if (!string.IsNullOrEmpty(_state.ActiveAssetAddress))
                 {
                     try
                     {
-                        var folder = Path.GetDirectoryName(_state.ActiveAbsolutePath);
+                        var folder = Path.GetDirectoryName(_state.ActiveAssetAddress);
                         if (!string.IsNullOrEmpty(folder))
                             CoreUi.Instance.OpenWithDefaultApplication(folder);
                     }
                     catch (Exception e)
                     {
-                        Log.Warning($"Failed to get directory for {_state.ActiveAbsolutePath} {e.Message}");
+                        Log.Warning($"Failed to get directory for {_state.ActiveAssetAddress} {e.Message}");
                     }
                 }
             }
@@ -64,7 +64,7 @@ internal sealed partial class AssetLibrary
             for (var index = 0; index < AssetType.AvailableTypes.Count; index++)
             {
                 var assetType = AssetType.AvailableTypes[index];
-                var count = AssetUseCounter.GetUseCount(assetType);
+                var count = AssetTypeUseCounter.GetUseCount(assetType);
                 var xIcon = (Icon)assetType.IconId;
                 var readOnlySpan = assetType.Name;
                 var iconColor = ColorVariations.OperatorLabel.Apply(assetType.Color);

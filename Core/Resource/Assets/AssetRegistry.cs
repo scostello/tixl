@@ -20,96 +20,79 @@ public static class AssetRegistry
     }
 
     public static bool TryResolveUri(string uri,
-                                     IResourceConsumer consumer,
+                                     IResourceConsumer? consumer,
                                      out string absolutePath,
                                      [NotNullWhen(true)] out IResourcePackage? resourceContainer,
                                      bool isFolder = false)
     {
         resourceContainer = null;
         absolutePath = string.Empty;
-        
+
         if (string.IsNullOrWhiteSpace(uri))
-        {
             return false;
-        }
-        
-        if (!isFolder)
+
+        // 1. High-performance registry lookup
+        if (TryGetAsset(uri, out var asset))
         {
-            if (TryGetAsset(uri, out var asset))
+            if (asset.FileSystemInfo != null && asset.IsDirectory == isFolder)
             {
-                if(asset.FileInfo != null) 
-                {
-                    Log.Debug($"Found Asset: {asset}");
-                    absolutePath = asset.FileInfo.FullName;
-                    resourceContainer = ResourceManager.SharedShaderPackages.FirstOrDefault(c => c.Id == asset.PackageId);
-                    return resourceContainer!= null;
-                }
+                absolutePath = asset.FileSystemInfo.FullName;
+                resourceContainer = ResourceManager.SharedShaderPackages.FirstOrDefault(c => c.Id == asset.PackageId);
+                return resourceContainer != null;
             }
         }
-        
+
         uri.ToForwardSlashesUnsafe();
         var uriSpan = uri.AsSpan();
-        
-        // Fallback for internal editor resources  
+
+        // 2. Fallback for internal editor resources
         if (uriSpan.StartsWith("./"))
         {
             absolutePath = Path.GetFullPath(uri);
             if (consumer is Instance instance)
-            {
                 Log.Warning($"Can't resolve relative asset '{uri}'", instance);
-            }
             else
-            {
                 Log.Warning($"Can't relative resolve asset '{uri}'");
-            }
-        
+
             return false;
         }
-        
-        var projectSeparator = uri.IndexOf(':');
-        
-        // Assume windows legacy file path
+
+        var projectSeparator = uri.IndexOf(PackageSeparator);
+
+        // 3. Legacy windows absolute paths (e.g. C:/...)
         if (projectSeparator == 1)
         {
             absolutePath = uri;
             return Exists(absolutePath, isFolder);
         }
-        
+
         if (projectSeparator == -1)
         {
             Log.Warning($"Can't resolve asset '{uri}'");
             return false;
         }
-        
+
+        // 4. Fallback search through packages
         var packageName = uriSpan[..projectSeparator];
         var localPath = uriSpan[(projectSeparator + 1)..];
-        
-        var packages = consumer?.AvailableResourcePackages;
-        if (packages == null)
+
+        var packages = consumer?.AvailableResourcePackages ?? ResourceManager.ShaderPackages;
+        if (packages.Count == 0)
         {
-            // FIXME: this should be properly implemented
-            //packages = uri.EndsWith(".hlsl") ? _shaderPackages : _sharedResourcePackages;
-            packages = ResourceManager.ShaderPackages;
-        
-            if (packages.Count == 0)
-            {
-                Log.Warning($"Can't resolve asset '{uri}' (no packages)");
-                return false;
-            }
+            Log.Warning($"Can't resolve asset '{uri}' (no packages found)");
+            return false;
         }
-        
+
         foreach (var package in packages)
         {
-            if (package.Name.AsSpan().Equals(packageName, StringComparison.Ordinal))
-            {
-                resourceContainer = package;
-                absolutePath = $"{package.ResourcesFolder}/{localPath}"; // Path.Combine(package.ResourcesFolder, localPath.ToString());
-                var exists = Exists(absolutePath, isFolder);
-                return exists;
-            }
+            if (!package.Name.AsSpan().Equals(packageName, StringComparison.Ordinal)) 
+                continue;
+            
+            resourceContainer = package;
+            absolutePath = $"{package.ResourcesFolder}/{localPath}";
+            return Exists(absolutePath, isFolder);
         }
-        
-        Log.Warning($"Can't resolve asset '{uri}' (no match in {packages.Count} packages)");
+
         return false;
     }
 
@@ -135,12 +118,86 @@ public static class AssetRegistry
         return false;
     }
 
+    internal static void RegisterAssetsFromPackage(SymbolPackage package)
+    {
+        var root = package.ResourcesFolder;
+        if (!Directory.Exists(root)) return;
+
+        var packageId = package.Id;
+        var packageAlias = package.Name;
+        var di = new DirectoryInfo(root);
+
+        RegisterEntry(di, root, packageAlias, packageId, isDirectory: true);
+        
+        // Register all files
+        foreach (var fileInfo in di.EnumerateFiles("*.*", SearchOption.AllDirectories))
+        {
+            RegisterEntry(fileInfo, root, packageAlias, packageId, false);
+        }
+
+        // Register all directories
+        foreach (var dirInfo in di.EnumerateDirectories("*", SearchOption.AllDirectories))
+        {
+            RegisterEntry(new FileInfo(dirInfo.FullName), root, packageAlias, packageId, true);
+        }
+
+        Log.Debug($"{packageAlias}: Registered {_assetsByAddress.Count(a => a.Value.PackageId == packageId)} assets (including directories).");
+    }
+
+    private static void RegisterEntry(FileSystemInfo info, string root, string packageAlias, Guid packageId, bool isDirectory)
+    {
+        // If the info is the root itself, relative path is empty string
+        var relativePath = Path.GetRelativePath(root, info.FullName).Replace("\\", "/");
+        if (relativePath == ".") relativePath = string.Empty;
+
+        var address = $"{packageAlias}{PackageSeparator}{relativePath}";
+
+        // Pre-calculate path parts
+        var parts = relativePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
+        var pathParts = new List<string>(parts.Length + 1) { packageAlias };
+    
+        // Logic for folder structure
+        var partCount = isDirectory ? parts.Length : parts.Length - 1;
+        for (var i = 0; i < partCount; i++)
+        {
+            pathParts.Add(parts[i]);
+        }
+
+        AssetType.TryGetForFilePath(info.Name, out var assetType, out var extensionId);
+
+        var asset = new Asset
+                        {
+                            Address = address,
+                            PackageId = packageId,
+                            FileSystemInfo = info,
+                            AssetType = assetType,
+                            IsDirectory = isDirectory,
+                            PathParts = pathParts,
+                            ExtensionId = extensionId,
+                        };
+
+        _assetsByAddress[address] = asset;
+    }
+
+    public static void UnregisterPackage(Guid packageId)
+    {
+        var urisToRemove = _assetsByAddress.Values
+                                           .Where(a => a.PackageId == packageId)
+                                           .Select(a => a.Address)
+                                           .ToList();
+
+        foreach (var uri in urisToRemove)
+        {
+            _assetsByAddress.TryRemove(uri, out _);
+            _usagesByAddress.TryRemove(uri, out _);
+        }
+    }
+    
     /// <summary>
     /// This will try to first create a localUrl, then a packageUrl,
     /// and finally fall back to an absolute path.
     ///
-    /// This can be useful to test if path would be valid before the
-    /// asset is being registered...
+    /// This method is useful to test if path would be valid before the asset is being registered...
     /// </summary>
     public static bool TryConstructAddressFromFilePath(string absolutePath,
                                                        Instance composition,
@@ -166,7 +223,7 @@ public static class AssetRegistry
         foreach (var p in composition.AvailableResourcePackages)
         {
             if (p == localPackage) continue;
-
+            
             var packageRoot = p.ResourcesFolder.TrimEnd('/') + "/";
             if (normalizedPath.StartsWith(packageRoot, StringComparison.OrdinalIgnoreCase))
             {
@@ -181,60 +238,11 @@ public static class AssetRegistry
         return true;
     }
 
-    #region registration and update
-    /// <summary>
-    /// Scans a package's resource folder and registers all found files.
-    /// </summary>
-    internal static void RegisterAssetsFromPackage(SymbolPackage package)
-    {
-        var root = package.ResourcesFolder;
-        if (!Directory.Exists(root)) return;
-
-        // Use standard .NET EnumerateFiles for performance
-        var files = Directory.EnumerateFiles(root, "*.*", SearchOption.AllDirectories);
-        var packageId = package.Id;
-        var packageAlias = package.Name;
-
-        foreach (var filePath in files)
-        {
-            var relativePath = Path.GetRelativePath(root, filePath).Replace("\\", "/");
-            var uri = $"{packageAlias}:{relativePath}"; // Mandatory format
-
-            var fileInfo = new FileInfo(filePath);
-            AssetType.TryGetForFilePath(fileInfo.Name, out var assetType);
-
-            var asset = new Asset
-                            {
-                                Address = uri,
-                                PackageId = packageId,
-                                FileInfo = fileInfo,
-                                AssetType = assetType // To be determined by extension
-                            };
-
-            _assetsByAddress[uri] = asset;
-        }
-
-        Log.Debug($"{packageAlias}: Registered {_assetsByAddress.Count(a => a.Value.PackageId == packageId)} assets.");
-    }
-
-    public static void UnregisterPackage(Guid packageId)
-    {
-        var urisToRemove = _assetsByAddress.Values
-                                           .Where(a => a.PackageId == packageId)
-                                           .Select(a => a.Address)
-                                           .ToList();
-
-        foreach (var uri in urisToRemove)
-        {
-            _assetsByAddress.TryRemove(uri, out _);
-            _usagesByAddress.TryRemove(uri, out _);
-        }
-    }
-    #endregion
-
     public const char PathSeparator = '/';
     public const char PackageSeparator = ':';
 
+    public static ICollection<Asset> AllAssets => _assetsByAddress.Values;
+    
     private static readonly ConcurrentDictionary<string, Asset> _assetsByAddress = new(StringComparer.OrdinalIgnoreCase);
     private static readonly ConcurrentDictionary<string, List<AssetReference>> _usagesByAddress = new();
 }

@@ -6,7 +6,7 @@ namespace T3.Editor.Gui.Windows.AssetLib;
 /// <summary>
 /// Helper to count and display how often assets are used.
 /// </summary>
-public static class AssetUseCounter {
+public static class AssetTypeUseCounter {
 
     public static void IncrementUseCount(AssetType assetType)
     {

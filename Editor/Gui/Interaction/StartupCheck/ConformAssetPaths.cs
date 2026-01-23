@@ -115,9 +115,7 @@ internal static class ConformAssetPaths
             case StringInputUi.UsageType.DirectoryPath:
                 if (TryConvertResourceFolderPath(stringValue.Value, symbol, out var convertedFolderPath))
                 {
-                    {
-                        Log.Debug($"{symbol}.{inputUi.InputDefinition.Name} Folder:  {symbol.SymbolPackage.Name}: {stringValue.Value} -> {convertedFolderPath}");
-                    }
+                    Log.Debug($"{symbol}.{inputUi.InputDefinition.Name} Folder:  {symbol.SymbolPackage.Name}: {stringValue.Value} -> {convertedFolderPath}");
                     stringValue.Value = convertedFolderPath;
                 }
 

@@ -30,10 +30,10 @@ public sealed class AssetType
         return Name;
     }
 
-    public static bool TryGetForFilePath(string filepath, out AssetType assetType)
+    public static bool TryGetForFilePath(string filepath, out AssetType assetType, out int extensionId)
     {
 
-        if (!FileExtensionRegistry.TryGetExtensionIdForFilePath(filepath, out var extensionId))
+        if (!FileExtensionRegistry.TryGetExtensionIdForFilePath(filepath, out extensionId))
         {
             assetType = Unknown;
             return false;
