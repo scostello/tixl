@@ -192,15 +192,16 @@ internal static class ConformAssetPaths
                     stringValue.Value = convertedFolderPath;
                 }
 
-                if (!AssetRegistry.TryResolveAddress(stringValue.Value, null, out var absolutePath, out _, isFolder: true))
+                if (!AssetRegistry.TryResolveAddress(stringValue.Value, null, out var absolutePath, out _, isFolder: true)
+                    && !string.IsNullOrEmpty(stringValue.Value))
                 {
                     if (symbolChild == null)
                     {
-                        Log.Warning($"Dir not found for default of: {symbol}.{inputUi.InputDefinition.Name}:  {stringValue.Value} => '{absolutePath}'");
+                        Log.Warning($"Can't find default asset folder for: {symbol}.{inputUi.InputDefinition.Name}:  {stringValue.Value} => '{absolutePath}'");
                     }
                     else
                     {
-                        Log.Warning($"Dir not found in: {symbolChild.Parent} / {symbol.Name}.{inputUi.InputDefinition.Name}: {stringValue.Value} => '{absolutePath}'");
+                        Log.Warning($"Can't find asset folder: {symbolChild.Parent?.Name} / {symbolChild.Symbol.Name}.{inputUi.InputDefinition.Name}: {stringValue.Value} => '{absolutePath}'");
                     }
                 }
 
