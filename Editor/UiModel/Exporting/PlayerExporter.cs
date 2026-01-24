@@ -92,7 +92,7 @@ internal static partial class PlayerExporter
 
         var generalResourceTargetDir = Path.Combine(exportDir, FileLocations.AssetsSubfolder);
         Directory.CreateDirectory(generalResourceTargetDir);
-        if (!TryCopyDirectory(SharedResources.Directory, generalResourceTargetDir, out reason))
+        if (!TryCopyDirectory(SharedResources.EditorResourcesDirectory, generalResourceTargetDir, out reason))
             return false;
 
         var playerDirectory = Path.Combine(FileLocations.StartFolder, "Player");

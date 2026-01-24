@@ -109,7 +109,7 @@ internal static class Program
         Console.WriteLine("Creating SplashScreen");
         ISplashScreen splashScreen = new SplashScreen.SplashScreen();
 
-        var path = Path.Combine(SharedResources.Directory, SharedResources.EditorSubFolder, "images", "t3-SplashScreen.png");
+        var path = Path.Combine(SharedResources.EditorResourcesDirectory,  "images", "t3-SplashScreen.png");
         splashScreen.Show(path);
 
         Console.WriteLine("Initializing logging");
