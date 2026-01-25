@@ -5,6 +5,7 @@ using T3.Core.Operator;
 using T3.Core.Operator.Slots;
 using T3.Core.Resource.Assets;
 using T3.Core.UserData;
+using T3.Core.Utils;
 using T3.Editor.Gui.InputUi.SimpleInputUis;
 using T3.Editor.UiModel;
 using T3.Editor.UiModel.InputsAndTypes;
@@ -265,9 +266,7 @@ internal static class ConformAssetPaths
             nonRooted = nonRooted[(symbol.SymbolPackage.Name.Length + 1)..];
         }
 
-        //absolutePath = $"{symbol.SymbolPackage.ResourcesFolder}/{nonRooted}";
         newPath = $"{symbol.SymbolPackage.Name}:{nonRooted}";
-
         return true;
     }
 
@@ -307,7 +306,7 @@ internal static class ConformAssetPaths
             fileName = Path.GetFileName(path);
         }
 
-        if (AssetRegistry.TryHealPath(fileName, out var healedAddress))
+        if (TryHeal(fileName, path, symbol, out var healedAddress))
         {
             newPath = healedAddress;
             return true;
@@ -331,6 +330,42 @@ internal static class ConformAssetPaths
         return !string.Equals(newPath, path, StringComparison.Ordinal);
     }
 
+    private static bool TryHeal(string fileName, string originalAddress, Symbol symbol, out string matchedAddress)
+    {
+        matchedAddress = string.Empty;
+        if (!AssetRegistry.TryGetHealerMatches(fileName, out var candidates))
+        {
+            return false;
+        }
+
+        if (candidates.Count == 1)
+        {
+            matchedAddress = candidates[0];
+            return true;
+        }
+
+        // Multiple matches found: Use scoring
+        matchedAddress = candidates
+                        .OrderBy(candidate => CalculateMatchScore(originalAddress, candidate, symbol.SymbolPackage.Name))
+                        .First();
+        return true;
+    }
+    
+
+    private static float CalculateMatchScore(string legacyPath, string candidateAddress, string currentPackageName)
+    {
+        // 1. Heavy preference for the same package
+        float score = candidateAddress.StartsWith(currentPackageName + ":") ? 0f : 100f;
+
+        // 2. Levenshtein distance between the paths
+        // We compare "Resources/images/helmet10.png" to "Lib:images/helmet10.png"
+        score += StringUtils.LevenshteinDistance(legacyPath, candidateAddress);
+
+        return score;
+    }
+    
+
+    
     private static bool TryMigrateFilterString(string legacyFilter, out string migratedFilter)
     {
         migratedFilter = legacyFilter;
