@@ -40,6 +40,8 @@ public abstract partial class SymbolPackage : IResourcePackage
     public virtual bool IsReadOnly => true;
 
     public readonly AssemblyInformation AssemblyInformation;
+    
+    /** Primary directory of the package that contains the csproj, home and other other data */
     public string Folder { get; }
 
     public virtual string DisplayName => AssemblyInformation.Name;
@@ -62,7 +64,7 @@ public abstract partial class SymbolPackage : IResourcePackage
     private static ConcurrentBag<SymbolPackage> _allPackages = [];
     public static IEnumerable<SymbolPackage> AllPackages => _allPackages;
 
-    public string ResourcesFolder { get; private set; } = null!;
+    public string AssetsFolder { get; private set; } = null!;
 
     public IReadOnlyCollection<DependencyCounter> Dependencies => (ReadOnlyCollection<DependencyCounter>)DependencyDict.Values;
     protected readonly ConcurrentDictionary<SymbolPackage, DependencyCounter> DependencyDict = new();
@@ -131,7 +133,7 @@ public abstract partial class SymbolPackage : IResourcePackage
 
     protected virtual void InitializeAssets()
     {
-        ResourcesFolder = Path.Combine(Folder, FileLocations.AssetsSubfolder);
+        AssetsFolder = Path.Combine(Folder, FileLocations.AssetsSubfolder);
 
         // Force the assembly information to load the JSON metadata now
         // This ensures Name and Id are valid before registration starts.
@@ -140,7 +142,7 @@ public abstract partial class SymbolPackage : IResourcePackage
         // Avoid creating resource folder in protected program folder
         if (!IsReadOnly)
         {
-            Directory.CreateDirectory(ResourcesFolder);
+            Directory.CreateDirectory(AssetsFolder);
         }
 
         ResourceManager.AddSharedResourceFolder(this, AssemblyInformation.ShouldShareResources);

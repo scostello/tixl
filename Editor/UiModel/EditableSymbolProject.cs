@@ -123,11 +123,11 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
     protected override void InitializeAssets()
     {
         base.InitializeAssets();
-        _resourceFileWatcher = new ResourceFileWatcher(ResourcesFolder);
+        _resourceFileWatcher = new ResourceFileWatcher(AssetsFolder);
         
         _resourceFileWatcher.FileCreated += (sender, path) => 
                                             {
-                                                AssetRegistry.RegisterEntry(new FileInfo(path), ResourcesFolder, Name, Id, false);
+                                                AssetRegistry.RegisterPackageEntry(new FileInfo(path), this, false);
                                             };
 
         _resourceFileWatcher.FileRenamed += (oldPath, newPath) => 

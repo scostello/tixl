@@ -826,7 +826,7 @@ internal sealed class GraphView : ScalableCanvas, IGraphView
 
                 if (ImGui.MenuItem("Resources"))
                 {
-                    CoreUi.Instance.OpenWithDefaultApplication(symbolPackage.ResourcesFolder);
+                    CoreUi.Instance.OpenWithDefaultApplication(symbolPackage.AssetsFolder);
                 }
 
                 ImGui.EndMenu();

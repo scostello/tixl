@@ -124,7 +124,7 @@ public static class AssetRegistry
         absolutePath.ToForwardSlashesUnsafe();
         foreach (var package in SymbolPackage.AllPackages)
         {
-            var folder = package.ResourcesFolder;
+            var folder = package.AssetsFolder;
             if (absolutePath.StartsWith(folder, StringComparison.OrdinalIgnoreCase))
             {
                 // Trim the folder length AND the following slash if it exists
