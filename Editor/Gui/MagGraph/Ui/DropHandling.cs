@@ -179,8 +179,12 @@ internal static class DropHandling
         stringInput.Parent.Parent?.Symbol.InvalidateInputInAllChildInstances(stringInput);
         stringInput.Input.IsDefault = false;
 
+        var parent = stringInput.Parent.Parent;
+        if (parent == null)
+            return false;
+        
         AssetRegistry.AddAssetReference(asset,
-                                        symbolId: stringInput.Parent.Symbol.Id,
+                                        symbolId: parent.Symbol.Id,
                                         stringInput.Parent.SymbolChildId,
                                         stringInput.Id);
 

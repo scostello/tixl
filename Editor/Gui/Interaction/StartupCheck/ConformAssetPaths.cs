@@ -1,4 +1,5 @@
 ﻿#nullable enable
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using T3.Core.Model;
@@ -195,11 +196,16 @@ internal static class ConformAssetPaths
 
                 if (asset != null)
                 {
-                    var symbolId = symbol.Id;
-                    var symbolChildId = symbolChild?.Id ?? Guid.Empty;
-                    var stringUiId = stringUi.Id;
-
-                    AssetRegistry.AddAssetReference(asset, symbolId, symbolChildId, stringUiId);
+                    // register default value reference
+                    if (symbolChild != null)
+                    {
+                        Debug.Assert(symbolChild.Parent != null);
+                        AssetRegistry.AddAssetReference(asset, symbolChild.Parent.Id, symbolChild.Id, stringUi.Id);
+                    }
+                    else
+                    {
+                        AssetRegistry.AddAssetReference(asset, symbol.Id, Guid.Empty, stringUi.Id);
+                    }
                 }
                 break;
             }

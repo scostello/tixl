@@ -47,12 +47,15 @@ internal static class DragAndDropHandling
     /// <summary>
     /// This should be called right after an ImGui item that is a drag source (e.g. a button).
     /// </summary>
-    internal static void HandleDragSourceForLastItem(DragTypes dragType, string data, string dragLabel)
+    /// <returns>
+    /// True if dragging started
+    /// </returns>
+    internal static bool HandleDragSourceForLastItem(DragTypes dragType, string data)
     {
         if (ImGui.IsItemActive())
         {
             if (IsDragging || !ImGui.BeginDragDropSource(ImGuiDragDropFlags.SourceNoPreviewTooltip))
-                return;
+                return false;
 
             if (HasData)
                 FreeData();
@@ -63,11 +66,16 @@ internal static class DragAndDropHandling
 
             ImGui.SetDragDropPayload(dragType.ToString(), _dataPtr, (uint)((data.Length + 1) * sizeof(char)));
             ImGui.EndDragDropSource();
+            return true;
+            
         }
-        else if (ImGui.IsItemDeactivated())
+
+        if (ImGui.IsItemDeactivated())
         {
             StopDragging();
         }
+
+        return false;
     }
 
     /// <summary>
@@ -104,7 +112,7 @@ internal static class DragAndDropHandling
         var color = Color.Orange.Fade(isHovered ? 1f : 0.5f);
         var thickness = isHovered ? 2f : 1f;
 
-        ImGui.GetWindowDrawList().AddRect(min, max, color, 0, ImDrawFlags.None, thickness);
+        ImGui.GetWindowDrawList().AddRect(min, max, color, 3, ImDrawFlags.None, thickness);
 
         if (!isHovered)
             return DragInteractionResult.None;

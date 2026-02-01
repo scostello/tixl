@@ -103,7 +103,7 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
     }
 
 
-    private static readonly string[] FolderExclusions = { "bin", "obj", "dependencies" };
+    private static readonly string[] _folderExclusions = ["bin", "obj", "dependencies"];
 
     protected override IEnumerable<string> SymbolUiSearchFiles => FindFilesOfType(SymbolUiExtension);
 
@@ -115,7 +115,7 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
     {
         var directoryInfo = new DirectoryInfo(Folder);
         return directoryInfo.EnumerateDirectories()
-                        .Where(x => !FolderExclusions.Contains(x.Name))
+                        .Where(x => !_folderExclusions.Contains(x.Name))
                         .SelectMany(x => x.EnumerateFiles($"*{fileExtension}", SearchOption.AllDirectories))
                         .Concat(directoryInfo.EnumerateFiles($"*{fileExtension}")).Select(x => x.FullName);
     }
@@ -125,17 +125,17 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
         base.InitializeAssets();
         _resourceFileWatcher = new ResourceFileWatcher(AssetsFolder);
         
-        _resourceFileWatcher.FileCreated += (sender, path) => 
+        _resourceFileWatcher.FileCreated += (_, path) => 
                                             {
                                                 AssetRegistry.RegisterPackageEntry(new FileInfo(path), this, false);
                                             };
 
         _resourceFileWatcher.FileRenamed += (oldPath, newPath) => 
                                             {
-                                                AssetRegistry.UpdateEntry(oldPath, newPath, this);
+                                                AssetRegistry.UpdateMovedAsset(oldPath, newPath);
                                             };
 
-        _resourceFileWatcher.FileDeleted += (sender, path) => 
+        _resourceFileWatcher.FileDeleted += (_, path) => 
                                             {
                                                 AssetRegistry.UnregisterAbsoluteFilePath(path, this);
                                             };
@@ -160,7 +160,7 @@ internal sealed partial class EditableSymbolProject : EditorSymbolPackage
     public override bool IsReadOnly => false;
     
 
-    private static IEnumerable<EditableSymbolProject>? _allProjectsCache = null;
+    private static IEnumerable<EditableSymbolProject>? _allProjectsCache;
     public static IEnumerable<EditableSymbolProject> AllProjects
     {
         get

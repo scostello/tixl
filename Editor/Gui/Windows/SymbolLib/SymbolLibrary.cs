@@ -795,8 +795,7 @@ internal sealed class SymbolLibrary : Window
 
         DragAndDropHandling.HandleDragSourceForLastItem(
                                                         DragAndDropHandling.DragTypes.Symbol,
-                                                        symbol.Id.ToString(),
-                                                        "Create instance");
+                                                        symbol.Id.ToString());
 
         if (!ImGui.IsItemDeactivated())
             return;
