@@ -80,21 +80,6 @@ internal sealed partial class AssetLibrary
         }
         else
         {
-            // Open main folders automatically
-            if (!_state.OpenedExamplesFolderOnce
-                && folderName == FileLocations.ExamplesPackageName)
-            {
-                ImGui.SetNextItemOpen(true);
-                _state.OpenedExamplesFolderOnce = true;
-            }
-
-            if (!_state.OpenedProjectsFolderOnce
-                && folderName == ProjectView.Focused?.RootInstance.Symbol.SymbolPackage.Name)
-            {
-                ImGui.SetNextItemOpen(true);
-                _state.OpenedProjectsFolderOnce = true;
-            }
-
             var hasMatches = folder.MatchingAssetCount > 0;
             var isSearching = !string.IsNullOrEmpty(_state.SearchString);
             var isFiltering = _state.CompatibleExtensionIds.Count > 0 || isSearching;
@@ -103,6 +88,21 @@ internal sealed partial class AssetLibrary
             if (isSearching && !hasMatches)
                 return;
 
+            // Open main folders automatically
+            if (!_state.OpenedExamplesFolderOnce
+                && folderName.Equals(FileLocations.ExamplesPackageName, StringComparison.OrdinalIgnoreCase) )
+            {
+                ImGui.SetNextItemOpen(true);
+                _state.OpenedExamplesFolderOnce = true;
+            }
+
+            if (!_state.OpenedProjectsFolderOnce
+                && folderName.Equals(ProjectView.Focused?.RootInstance.Symbol.SymbolPackage.Name ?? string.Empty, StringComparison.InvariantCultureIgnoreCase))
+            {
+                ImGui.SetNextItemOpen(true);
+                _state.OpenedProjectsFolderOnce = true;
+            }
+            
             ImGui.PushID(folder.HashCode);
 
             // Prepare drawing
@@ -124,13 +124,13 @@ internal sealed partial class AssetLibrary
             _state.TreeHandler.UpdateForNode(folder.HashCode);
 
             var lastPos = ImGui.GetCursorScreenPos();
-            
+
             // Draw the actual folder item
             ImGui.PushFont(isCurrentCompositionPackage ? Fonts.FontBold : Fonts.FontNormal);
             var isOpen = ImGui.TreeNodeEx(folderName);
             ImGui.PopFont();
             ImGui.PopStyleColor(3);
-            
+
             if (ImGui.IsItemHovered())
             {
                 ImGui.GetWindowDrawList().AddRectFilled(ImGui.GetItemRectMin(), ImGui.GetItemRectMax(), UiColors.BackgroundActive.Fade(0.2f), 5);
@@ -140,8 +140,6 @@ internal sealed partial class AssetLibrary
                                                       ImGui.GetItemRectMin()
                                                       + new Vector2(ImGui.GetFontSize(), 0));
 
-            
-            
             HandleDropFilesIntoFolder(folder);
             HandleDropAssetsIntoFolder(folder);
 
@@ -165,31 +163,28 @@ internal sealed partial class AssetLibrary
                                                     {
                                                         CreateSubFolder(folder);
                                                     }
-                                                    
+
                                                     if (ImGui.MenuItem("Rename"))
                                                     {
                                                         _state.RenamingInProcessId = folder.Asset?.Id ?? Guid.Empty;
                                                         _state.RenameBuffer = folder.Name;
                                                     }
-                                                    
+
                                                     if (ImGui.MenuItem("Delete folder"))
                                                     {
-                                                        
                                                         try
                                                         {
-                                                            if (Directory.Exists(folder.Address))
+                                                            if (Directory.Exists(folder.AbsolutePath))
                                                             {
                                                                 Log.Debug("Deleting " + folder.Address);
                                                                 Directory.Delete(folder.AbsolutePath);
                                                             }
-                                                            else
-                                                            {
-                                                                AssetRegistry.RemoveObsoleteAsset(folder.Asset);
-                                                            }
+
+                                                            AssetRegistry.RemoveObsoleteAsset(folder.Asset);
                                                         }
-                                                        catch(Exception e)
+                                                        catch (Exception e)
                                                         {
-                                                            Log.Warning("Can't remove folder " + folder.AbsolutePath);
+                                                            Log.Warning($"Can't remove folder {folder.AbsolutePath} ({e.Message}");
                                                         }
                                                     }
                                                 });
@@ -244,160 +239,6 @@ internal sealed partial class AssetLibrary
                     }
                 }
             }
-        }
-    }
-
-    private static void HandleRenameFolder(AssetFolder folder, Vector2 lastPos)
-    {
-        _state.RenameBuffer ??= string.Empty;
-        if (_state.RenamingInProcessId != folder.Asset?.Id) 
-            return;
-        
-        var keepNextPos = ImGui.GetCursorScreenPos();
-                
-        ImGui.SetCursorScreenPos(lastPos);
-        ImGui.SetKeyboardFocusHere();
-        ImGui.InputText("##renameFolder", ref _state.RenameBuffer, 256);
-        if(ImGui.IsItemDeactivatedAfterEdit())
-        {
-            var isValidName = !string.IsNullOrEmpty( _state.RenameBuffer) && _state.RenameBuffer.IndexOfAny(['/', '\\', ':']) == -1;
-
-            if (isValidName)
-            {
-                var oldPath = folder.AbsolutePath;
-                var newPath = folder.AbsolutePath.Replace(folder.Name, _state.RenameBuffer); 
-                try 
-                {
-                    if (Directory.Exists(oldPath))
-                    {
-                        Directory.Move(oldPath, newPath);
-                        AssetRegistry.UpdateMovedAsset(oldPath, newPath);
-                        // TODO: update all references?
-                    }
-                    else
-                    {
-                        Log.Warning($"Rename failed: Path doesn't exist: {oldPath}");    
-                    }
-                }
-                catch (IOException ex)
-                {
-                    Log.Warning($"Rename failed: {ex.Message}");
-                }
-                
-            } 
-            _state.RenamingInProcessId = Guid.Empty;
-        }
-
-        if (ImGui.IsKeyPressed(ImGuiKey.Escape))
-            _state.RenamingInProcessId = Guid.Empty;
-        
-        ImGui.SetCursorScreenPos(keepNextPos);
-    }
-
-    private static void CreateSubFolder(AssetFolder folder)
-    {
-        var parentPath = folder.AbsolutePath;
-        var newName = "New folder";
-        var newPath = Path.Combine(parentPath, newName);
-
-        int suffixCounter = 1;
-        while (Directory.Exists(newPath))
-        {
-            newPath = Path.Combine(parentPath, $"{newName} {suffixCounter}");
-            suffixCounter++;
-        }
-
-        try
-        {
-            var dir = Directory.CreateDirectory(newPath);
-        }
-        catch (Exception e)
-        {
-            Log.Warning($"Can't create folder {newPath} " + e.Message);
-        }
-    }
-
-    private static void HandleDropFilesIntoFolder(AssetFolder folder)
-    {
-        var dropFilesResult = DragAndDropHandling.TryHandleDropOnItem(DragAndDropHandling.DragTypes.ExternalFile, out var data, () =>
-                                                                          {
-                                                                              CustomComponents.BeginTooltip();
-                                                                              ImGui.TextUnformatted("Import files to here...");
-                                                                              CustomComponents.EndTooltip();
-                                                                          });
-
-        if (dropFilesResult != DragAndDropHandling.DragInteractionResult.Dropped || data == null)
-            return;
-
-        if (!AssetRegistry.TryResolveAddress(folder.Address, null, out _, out var package, isFolder: true))
-        {
-            Log.Warning($"Can't resolve address ({folder.Address}) for target folder {folder}?");
-            return;
-        }
-
-        var filePaths = data.Split("|");
-        foreach (var path in filePaths)
-        {
-            FileImport.TryImportDroppedFile(path, package, folder.Name, out _);
-        }
-    }
-
-    private static void HandleDropAssetsIntoFolder(AssetFolder folder)
-    {
-        var dropFilesResult = DragAndDropHandling.TryHandleDropOnItem(DragAndDropHandling.DragTypes.FileAsset, out var data, () =>
-                                                                          {
-                                                                              CustomComponents.BeginTooltip();
-                                                                              ImGui.TextUnformatted("Move assets here...");
-                                                                              CustomComponents.EndTooltip();
-                                                                          });
-
-        if (dropFilesResult == DragAndDropHandling.DragInteractionResult.Dropped && !string.IsNullOrEmpty(data))
-        {
-            MoveAssetsToFolder(folder, data);
-        }
-    }
-
-    private static void MoveAssetsToFolder(AssetFolder folder, string data)
-    {
-        var assetAddresses = data.Split("|");
-        foreach (var address in assetAddresses)
-        {
-            if (!AssetRegistry.TryGetAsset(address, out var asset))
-            {
-                Log.Warning("Can't resolve asset? " + address);
-                continue;
-            }
-
-            if (asset.FileSystemInfo == null)
-            {
-                Log.Warning("Skipping asset without file system info? " + asset);
-                continue;
-            }
-
-            if (!asset.TryGetFileName(out var filename))
-            {
-                Log.Warning($"Can't get filename for {asset}");
-                continue;
-            }
-
-            var targetFilePath = Path.Combine(folder.AbsolutePath, filename.ToString());
-            if (File.Exists(targetFilePath))
-            {
-                Log.Debug("File already exists: " + targetFilePath);
-                continue;
-            }
-
-            try
-            {
-                File.Move(asset.FileSystemInfo.FullName, targetFilePath);
-            }
-            catch (Exception e)
-            {
-                Log.Warning("Can't move file " + e.Message);
-                continue;
-            }
-
-            AssetRegistry.UpdateMovedAsset(asset.FileSystemInfo.FullName, targetFilePath);
         }
     }
 
@@ -546,11 +387,7 @@ internal sealed partial class AssetLibrary
                                                                    if (ImGui.MenuItem("Reveal in Explorer"))
                                                                    {
                                                                        var absolutePath = asset.FileSystemInfo?.FullName;
-                                                                       if (!string.IsNullOrEmpty(absolutePath))
-                                                                       {
-                                                                           CoreUi.Instance.OpenWithDefaultApplication(absolutePath);
-                                                                       }
-
+                                                                       
                                                                        var folder = Path.GetDirectoryName(absolutePath);
                                                                        if (!string.IsNullOrEmpty(folder))
                                                                        {
@@ -628,16 +465,6 @@ internal sealed partial class AssetLibrary
                     ImGui.PopStyleVar();
                 }
             }
-
-            // // Click
-            // if (ImGui.IsItemDeactivated())
-            // {
-            //     var wasClick = ImGui.GetMouseDragDelta().Length() < 4;
-            //     if (wasClick)
-            //     {
-            //         // TODO: implement
-            //     }
-            // }
         }
 
         ImGui.PopID();
