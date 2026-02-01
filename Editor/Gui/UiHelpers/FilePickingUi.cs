@@ -6,7 +6,6 @@ using T3.Editor.Gui.Input;
 using T3.Editor.Gui.Styling;
 using T3.Editor.Gui.Windows.AssetLib;
 using T3.Editor.Gui.Windows.Layouts;
-using T3.Editor.Gui.Windows.RenderExport;
 using T3.Editor.UiModel.InputsAndTypes;
 using T3.Editor.UiModel.ProjectHandling;
 
